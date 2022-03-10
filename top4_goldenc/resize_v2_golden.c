@@ -5,11 +5,14 @@
  * @Last Modified time: 2021-09-28 15:20:47
  */
 
-#include <riscv_vector.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../env/platform.h"
-#include "../stubs/printf.h"
+#include "../com_lib/platform.h"
+#include "../com_lib/printf.h"
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) > (b) ? (a) : (b))
+#define CLIP(a, min, max) min(max(min, a), max)
 
 struct resize_param{
     uint16_t channel;

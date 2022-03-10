@@ -1,8 +1,7 @@
-#include <riscv_vector.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../env/platform.h"
-#include "../stubs/printf.h"
+#include "../com_lib/platform.h"
+#include "../com_lib/printf.h"
 
 #define inner_shift 8
 #define MAX(a, b) ((a) > (b) ? (a) : (b))

@@ -5,11 +5,10 @@
  * @Last Modified time: 2021-09-22 19:55:22
  */
 
-#include <riscv_vector.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../env/platform.h"
-#include "../stubs/printf.h"
+#include "../com_lib/platform.h"
+#include "../com_lib/printf.h"
 
 // #define BOOL int
 // BOOL DEBUG = 0;

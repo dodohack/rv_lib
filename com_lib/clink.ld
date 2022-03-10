@@ -19,10 +19,10 @@ SECTIONS {
     .bss    : { *(.bss)} > RAM
     data_end = .;
 
-    . = =ALIGN(8);
+    . = ALIGN(8);
     PROVIDE( _end = .);
     PROVIDE( end = .);
-    .stack ORIGIN(RAM) + LENGTH(RAM) - __stack_size ;
+    .stack ORIGIN(RAM) + LENGTH(RAM) - __stack_size :
     {
         PROVIDE( _heap_end = .);
         . += __stack_size;

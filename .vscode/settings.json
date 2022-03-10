@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "random": "c"
+        "random": "c",
+        "platform.h": "c",
+        "printf.h": "c"
     }
 }

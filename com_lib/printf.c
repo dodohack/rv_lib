@@ -6,7 +6,7 @@
  */
 
 #include <stdarg.h>
-#include "../env/mem_map.h"
+#include "mem_map.h"
 #include "printf.h"
 
 /*---------------------------------------------------*/

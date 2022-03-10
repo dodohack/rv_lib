@@ -5,11 +5,10 @@
  * @Last Modified time: 2021-09-23 10:59:46
  */
 
-#include <riscv_vector.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../env/platform.h"
-#include "../stubs/printf.h"
+#include "../com_lib/platform.h"
+#include "../com_lib/printf.h"
 
 struct correlation_param{
     size_t in_channel;

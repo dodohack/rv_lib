@@ -1,6 +1,6 @@
 .pushsection .tohost,"aw",@progbits;
-.align 6; .global tohost; tohost; .dword 0;
-.align 6; .global fromhost; fromhost; .dword 0;
+.align 6; .global tohost; tohost: .dword 0;
+.align 6; .global fromhost; fromhost: .dword 0;
 .popsection;
 
 .attribute unaligned_access, 0
@@ -27,3 +27,4 @@ _end:
     .rept 10
     nop
     .endr
+    
