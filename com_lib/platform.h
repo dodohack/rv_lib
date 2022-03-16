@@ -5,8 +5,8 @@
 
 int read_rdcycle(){
     int tmp_cycle = 0;
-    asm __volatile__("rdcycle %[dst01]\n" : [dst01]"=r"(tmp_cycle) : :"memory");
-    // asm __volatile__("csrr %[dst01], mcycle\n" : [dst01]"=r"(tmp_cycle) : :"memory");
+    //asm __volatile__("rdcycle %[dst01]\n" : [dst01]"=r"(tmp_cycle) : :"memory");
+    asm __volatile__("csrr %[dst01], mcycle\n" : [dst01]"=r"(tmp_cycle) : :"memory");
     return tmp_cycle;
 }
 
