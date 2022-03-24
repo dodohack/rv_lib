@@ -28,7 +28,7 @@ void global_arr_init(){
     for(uint32_t j=0; j < 360640; j++){
         src_arr_global[j] = j % 64;
     }
-    for(uint32_t i=0; i < 600; i++){
+    for(uint32_t i=0; i < 150; i++){
         rois_arr_global[i*8]   = (uint16_t)(1);
         rois_arr_global[i*8+1] = (uint16_t)(1);
         rois_arr_global[i*8+2] = (uint16_t)(11);
