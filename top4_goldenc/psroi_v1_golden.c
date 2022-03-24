@@ -143,8 +143,10 @@ void psroi_align_golden(uint8_t *data,
         uint16_t roi_width = MAX((roi_end_w - roi_start_w), (1 << roi_shift));
         uint16_t roi_height = MAX((roi_end_h - roi_start_h), (1 << roi_shift));
 
-        uint16_t bin_size_ratio_w = (uint16_t)((1.0 / pooled_w) * (1 << inner_shift));
-        uint16_t bin_size_ratio_h = (uint16_t)((1.0 / pooled_h) * (1 << inner_shift));
+        // uint16_t bin_size_ratio_w = (uint16_t)((1.0 / pooled_w) * (1 << inner_shift));
+        uint16_t bin_size_ratio_w = (uint16_t)((1 << inner_shift) / pooled_w);
+        // uint16_t bin_size_ratio_h = (uint16_t)((1.0 / pooled_h) * (1 << inner_shift));
+        uint16_t bin_size_ratio_h = (uint16_t)((1 << inner_shift) / pooled_h);
         uint16_t bin_size_w = (roi_width * bin_size_ratio_w) >> inner_shift;
         uint16_t bin_size_h = (roi_height * bin_size_ratio_h) >> inner_shift;
     
