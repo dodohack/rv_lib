@@ -1,10 +1,3 @@
-/*
- * @Author: yuanhang.zhang 
- * @Date: 2021-08-19 17:59:02 
- * @Last Modified by: yuanhang
- * @Last Modified time: 2021-08-26 15:49:09
- */
-
 #include <riscv_vector.h>
 #include <stdio.h>
 #include <stdlib.h>
