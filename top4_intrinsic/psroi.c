@@ -1,8 +1,8 @@
 #include <riscv_vector.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../env/platform.h"
-#include "../stubs/printf.h"
+#include "../com_lib/platform.h"
+#include "../com_lib/printf.h"
 
 #define inner_shift 8
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -112,240 +112,240 @@ void psroi_pooling_align_vec(struct psroi_param *param){
             data_ptr = param->src_arr + (k2_index) * src_hwc;
             out_ptr = param->out_arr + k2_index + vl_cnt * out_hwc_stride;
 
-            vuint16m2_t roi_start_w = vlse16_v_u16m2(rois_ptr0, 8);
-            vuint16m2_t roi_start_h = vlse16_v_u16m2(rois_ptr1, 8);
-            vuint16m2_t roi_end_w = vlse16_v_u16m2(rois_ptr2, 8);
-            vuint16m2_t roi_end_h = vlse16_v_u16m2(rois_ptr3, 8);          
+            vuint16m2_t roi_start_w = vlse16_v_u16m2(rois_ptr0, 8, roi_vl);
+            vuint16m2_t roi_start_h = vlse16_v_u16m2(rois_ptr1, 8, roi_vl);
+            vuint16m2_t roi_end_w = vlse16_v_u16m2(rois_ptr2, 8, roi_vl);
+            vuint16m2_t roi_end_h = vlse16_v_u16m2(rois_ptr3, 8, roi_vl);          
 
-            vuint16m2_t roi_width_tmp = vsub_vv_u16m2(roi_end_w, roi_start_w);
-            vuint16m2_t roi_width = vmaxu_vx_u16m2(roi_width_tmp, roi_shifted);
-            vuint16m2_t roi_height_tmp = vsub_vv_u16m2(roi_end_h, roi_start_h);
-            vuint16m2_t roi_height = vmaxu_vx_u16m2(roi_height_tmp, roi_shifted);
+            vuint16m2_t roi_width_tmp = vsub_vv_u16m2(roi_end_w, roi_start_w, roi_vl);
+            vuint16m2_t roi_width = vmaxu_vx_u16m2(roi_width_tmp, roi_shifted, roi_vl);
+            vuint16m2_t roi_height_tmp = vsub_vv_u16m2(roi_end_h, roi_start_h, roi_vl);
+            vuint16m2_t roi_height = vmaxu_vx_u16m2(roi_height_tmp, roi_shifted, roi_vl);
 
-            vuint16m2_t bin_size_w_tmp = vmul_vx_u16m2(roi_width, bin_size_ratio_w);
-            vuint16m2_t bin_size_w = vsrl_vx_u16m2(bin_size_w_tmp, (uint16_t)inner_shift);
-            vuint16m2_t bin_size_h_tmp = vmul_vx_u16m2(roi_height, bin_size_ratio_h);
-            vuint16m2_t bin_size_h = vsrl_vx_u16m2(bin_size_h_tmp, (uint16_t)inner_shift);
+            vuint16m2_t bin_size_w_tmp = vmul_vx_u16m2(roi_width, bin_size_ratio_w, roi_vl);
+            vuint16m2_t bin_size_w = vsrl_vx_u16m2(bin_size_w_tmp, (uint16_t)inner_shift, roi_vl);
+            vuint16m2_t bin_size_h_tmp = vmul_vx_u16m2(roi_height, bin_size_ratio_h, roi_vl);
+            vuint16m2_t bin_size_h = vsrl_vx_u16m2(bin_size_h_tmp, (uint16_t)inner_shift, roi_vl);
 
-            vuint16m2_t grid_w = vdivu_vx_u16m2(bin_size_w, sampling_ratio_double);
-            vuint16m2_t grid_h = vdivu_vx_u16m2(bin_size_h, sampling_ratio_double);
+            vuint16m2_t grid_w = vdivu_vx_u16m2(bin_size_w, sampling_ratio_double, roi_vl);
+            vuint16m2_t grid_h = vdivu_vx_u16m2(bin_size_h, sampling_ratio_double, roi_vl);
 
-            vuint16m2_t y_tmp = vmacc_vx_u16m2(roi_start_h, ph, bin_size_h);
-            vuint16m2_t x_tmp = vmacc_vx_u16m2(roi_start_w, pw, bin_size_w);
-            vuint16m2_t grid_h3 = vmul_vx_u16m2(grid_h, 3);
-            vuint16m2_t grid_w3 = vmul_vx_u16m2(grid_w, 3);
-            vuint16m2_t y_tmp_grid_h = vadd_vv_u16m2(y_tmp, grid_h);
-            vuint16m2_t y_tmp_grid_h3 = vadd_vv_u16m2(y_tmp, grid_h3);
-            vuint16m2_t x_tmp_grid_w = vadd_vv_u16m2(x_tmp, grid_w);
-            vuint16m2_t x_tmp_grid_w3 = vadd_vv_u16m2(x_tmp, grid_w3);
+            vuint16m2_t y_tmp = vmacc_vx_u16m2(roi_start_h, ph, bin_size_h, roi_vl);
+            vuint16m2_t x_tmp = vmacc_vx_u16m2(roi_start_w, pw, bin_size_w, roi_vl);
+            vuint16m2_t grid_h3 = vmul_vx_u16m2(grid_h, 3, roi_vl);
+            vuint16m2_t grid_w3 = vmul_vx_u16m2(grid_w, 3, roi_vl);
+            vuint16m2_t y_tmp_grid_h = vadd_vv_u16m2(y_tmp, grid_h, roi_vl);
+            vuint16m2_t y_tmp_grid_h3 = vadd_vv_u16m2(y_tmp, grid_h3, roi_vl);
+            vuint16m2_t x_tmp_grid_w = vadd_vv_u16m2(x_tmp, grid_w, roi_vl);
+            vuint16m2_t x_tmp_grid_w3 = vadd_vv_u16m2(x_tmp, grid_w3, roi_vl);
 
-            vuint16m2_t maskedoff_height = vle16_v_u16m2(maskedoff_height_ptr);
-            vuint16m2_t maskedoff_width = vle16_v_u16m2(maskedoff_width_ptr);
+            vuint16m2_t maskedoff_height = vle16_v_u16m2(maskedoff_height_ptr, roi_vl);
+            vuint16m2_t maskedoff_width = vle16_v_u16m2(maskedoff_width_ptr, roi_vl);
 
             for (uint32_t c = 0; c < pooled_c; c++){
 
                 // pooled0 iy=0,ix=0,
                 // y=roi_start_h+ph*bin_size_h+grid_h,  x=roi_start_w+pw*bin_size_w+grid_w
-                vuint16m2_t y_low = vsrl_vx_u16m2(y_tmp_grid_h, (uint16_t)roi_shift);      
-                vuint16m2_t x_low = vsrl_vx_u16m2(x_tmp_grid_w, (uint16_t)roi_shift);
-                vbool8_t y_low_mask = vmsltu_vx_u16m2_b8(y_low, height_border);
-                vbool8_t x_low_mask = vmsltu_vx_u16m2_b8(x_low, width_border);
-                vbool8_t y_low_mask_n = vmnot_m_b8(y_low_mask);
-                vbool8_t x_low_mask_n = vmnot_m_b8(x_low_mask);
-                vuint16m2_t y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1);
-                vuint16m2_t x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1);
-                vuint16m2_t y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h, y_low, (uint16_t)roi_shift);
-                vuint16m2_t x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w, x_low, (uint16_t)roi_shift);
+                vuint16m2_t y_low = vsrl_vx_u16m2(y_tmp_grid_h, (uint16_t)roi_shift, roi_vl);      
+                vuint16m2_t x_low = vsrl_vx_u16m2(x_tmp_grid_w, (uint16_t)roi_shift, roi_vl);
+                vbool8_t y_low_mask = vmsltu_vx_u16m2_b8(y_low, height_border, roi_vl);
+                vbool8_t x_low_mask = vmsltu_vx_u16m2_b8(x_low, width_border, roi_vl);
+                vbool8_t y_low_mask_n = vmnot_m_b8(y_low_mask, roi_vl);
+                vbool8_t x_low_mask_n = vmnot_m_b8(x_low_mask, roi_vl);
+                vuint16m2_t y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1, roi_vl);
+                vuint16m2_t x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1, roi_vl);
+                vuint16m2_t y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h, y_low, (uint16_t)roi_shift, roi_vl);
+                vuint16m2_t x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w, x_low, (uint16_t)roi_shift, roi_vl);
 
-                vuint16m2_t ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift);
-                vuint16m2_t lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift);
-                vuint16m2_t ly = vsub_vv_u16m2(y, ly_tmp);
-                vuint16m2_t lx = vsub_vv_u16m2(x, lx_tmp);
-                vuint16m2_t hy = vrsub_vx_u16m2(ly, roi_shifted);
-                vuint16m2_t hx = vrsub_vx_u16m2(lx, roi_shifted);
+                vuint16m2_t ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift, roi_vl);
+                vuint16m2_t lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift, roi_vl);
+                vuint16m2_t ly = vsub_vv_u16m2(y, ly_tmp, roi_vl);
+                vuint16m2_t lx = vsub_vv_u16m2(x, lx_tmp, roi_vl);
+                vuint16m2_t hy = vrsub_vx_u16m2(ly, roi_shifted, roi_vl);
+                vuint16m2_t hx = vrsub_vx_u16m2(lx, roi_shifted, roi_vl);
 
-                vuint16m2_t v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low);
-                vuint16m2_t v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low);
-                vuint16m2_t v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high);
-                vuint16m2_t v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high);
+                vuint16m2_t v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low, roi_vl);
+                vuint16m2_t v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low, roi_vl);
+                vuint16m2_t v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high, roi_vl);
+                vuint16m2_t v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high, roi_vl);
      
-                vuint8m1_t v1_tmp = vlxei16_v_u8m1(data_ptr, v1_index);
-                vuint8m1_t v2_tmp = vlxei16_v_u8m1(data_ptr, v2_index);
-                vuint8m1_t v3_tmp = vlxei16_v_u8m1(data_ptr, v3_index);
-                vuint8m1_t v4_tmp = vlxei16_v_u8m1(data_ptr, v4_index);
-                vuint16m2_t v1 = vwaddu_vx_u16m2(v1_tmp, 0);
-                vuint16m2_t v2 = vwaddu_vx_u16m2(v2_tmp, 0);
-                vuint16m2_t v3 = vwaddu_vx_u16m2(v3_tmp, 0);
-                vuint16m2_t v4 = vwaddu_vx_u16m2(v4_tmp, 0);
+                vuint8m1_t v1_tmp = vloxei16_v_u8m1(data_ptr, v1_index, roi_vl);
+                vuint8m1_t v2_tmp = vloxei16_v_u8m1(data_ptr, v2_index, roi_vl);
+                vuint8m1_t v3_tmp = vloxei16_v_u8m1(data_ptr, v3_index, roi_vl);
+                vuint8m1_t v4_tmp = vloxei16_v_u8m1(data_ptr, v4_index, roi_vl);
+                vuint16m2_t v1 = vwaddu_vx_u16m2(v1_tmp, 0, roi_vl);
+                vuint16m2_t v2 = vwaddu_vx_u16m2(v2_tmp, 0, roi_vl);
+                vuint16m2_t v3 = vwaddu_vx_u16m2(v3_tmp, 0, roi_vl);
+                vuint16m2_t v4 = vwaddu_vx_u16m2(v4_tmp, 0, roi_vl);
 
-                vuint16m2_t w1_tmp = vmul_vv_u16m2(hy, hx);            
-                vuint16m2_t w2_tmp = vmul_vv_u16m2(hy, lx);
-                vuint16m2_t w3_tmp = vmul_vv_u16m2(ly, hx);
-                vuint16m2_t w4_tmp = vmul_vv_u16m2(ly, lx);
-                vuint16m2_t w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift);
-                vuint16m2_t w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift);
-                vuint16m2_t w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift);
-                vuint16m2_t w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift);
+                vuint16m2_t w1_tmp = vmul_vv_u16m2(hy, hx, roi_vl);            
+                vuint16m2_t w2_tmp = vmul_vv_u16m2(hy, lx, roi_vl);
+                vuint16m2_t w3_tmp = vmul_vv_u16m2(ly, hx, roi_vl);
+                vuint16m2_t w4_tmp = vmul_vv_u16m2(ly, lx, roi_vl);
+                vuint16m2_t w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift, roi_vl);
+                vuint16m2_t w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift, roi_vl);
+                vuint16m2_t w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift, roi_vl);
+                vuint16m2_t w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift, roi_vl);
 
-                vuint32m4_t val_pooled0_tmp = vwmulu_vv_u32m4(w1, v1);
-                val_pooled0_tmp = vwmaccu_vv_u32m4(val_pooled0_tmp, w2, v2);
-                val_pooled0_tmp = vwmaccu_vv_u32m4(val_pooled0_tmp, w3, v3);
-                val_pooled0_tmp = vwmaccu_vv_u32m4(val_pooled0_tmp, w4, v4);
-                vuint16m2_t val_pooled0 = vnsrl_wx_u16m2(val_pooled0_tmp, (uint16_t)roi_shift); 
+                vuint32m4_t val_pooled0_tmp = vwmulu_vv_u32m4(w1, v1, roi_vl);
+                val_pooled0_tmp = vwmaccu_vv_u32m4(val_pooled0_tmp, w2, v2, roi_vl);
+                val_pooled0_tmp = vwmaccu_vv_u32m4(val_pooled0_tmp, w3, v3, roi_vl);
+                val_pooled0_tmp = vwmaccu_vv_u32m4(val_pooled0_tmp, w4, v4, roi_vl);
+                vuint16m2_t val_pooled0 = vnsrl_wx_u16m2(val_pooled0_tmp, (uint16_t)roi_shift, roi_vl); 
 
                 // // pooled1 iy=0,ix=1,
                 // y=roi_start_h+ph*bin_size_h+3*grid_h,  x=roi_start_w+pw*bin_size_w+grid_w
-                y_low = vsrl_vx_u16m2(y_tmp_grid_h3, (uint16_t)roi_shift);      
-                x_low = vsrl_vx_u16m2(x_tmp_grid_w, (uint16_t)roi_shift);
-                y_low_mask = vmsleu_vx_u16m2_b8(y_low, src_height);
-                x_low_mask = vmsleu_vx_u16m2_b8(x_low, src_width);
-                y_low_mask_n = vmnot_m_b8(y_low_mask);
-                x_low_mask_n = vmnot_m_b8(x_low_mask);
-                y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1);
-                x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1);
-                y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h3, y_low, (uint16_t)roi_shift);
-                x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w, x_low, (uint16_t)roi_shift);
+                y_low = vsrl_vx_u16m2(y_tmp_grid_h3, (uint16_t)roi_shift, roi_vl);      
+                x_low = vsrl_vx_u16m2(x_tmp_grid_w, (uint16_t)roi_shift, roi_vl);
+                y_low_mask = vmsleu_vx_u16m2_b8(y_low, src_height, roi_vl);
+                x_low_mask = vmsleu_vx_u16m2_b8(x_low, src_width, roi_vl);
+                y_low_mask_n = vmnot_m_b8(y_low_mask, roi_vl);
+                x_low_mask_n = vmnot_m_b8(x_low_mask, roi_vl);
+                y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1, roi_vl);
+                x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1, roi_vl);
+                y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h3, y_low, (uint16_t)roi_shift, roi_vl);
+                x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w, x_low, (uint16_t)roi_shift, roi_vl);
 
-                ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift);
-                lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift);
-                ly = vsub_vv_u16m2(y, ly_tmp);
-                lx = vsub_vv_u16m2(x, lx_tmp);
-                hy = vrsub_vx_u16m2(ly, roi_shifted);
-                hx = vrsub_vx_u16m2(lx, roi_shifted);
+                ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift, roi_vl);
+                lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift, roi_vl);
+                ly = vsub_vv_u16m2(y, ly_tmp, roi_vl);
+                lx = vsub_vv_u16m2(x, lx_tmp, roi_vl);
+                hy = vrsub_vx_u16m2(ly, roi_shifted, roi_vl);
+                hx = vrsub_vx_u16m2(lx, roi_shifted, roi_vl);
 
-                v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low);
-                v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low);
-                v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high);
-                v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high);
-                v1_tmp = vlxei16_v_u8m1(data_ptr, v1_index);
-                v2_tmp = vlxei16_v_u8m1(data_ptr, v2_index);
-                v3_tmp = vlxei16_v_u8m1(data_ptr, v3_index);
-                v4_tmp = vlxei16_v_u8m1(data_ptr, v4_index);
-                v1 = vwaddu_vx_u16m2(v1_tmp, 0);
-                v2 = vwaddu_vx_u16m2(v2_tmp, 0);
-                v3 = vwaddu_vx_u16m2(v3_tmp, 0);
-                v4 = vwaddu_vx_u16m2(v4_tmp, 0);
+                v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low, roi_vl);
+                v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low, roi_vl);
+                v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high, roi_vl);
+                v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high, roi_vl);
+                v1_tmp = vloxei16_v_u8m1(data_ptr, v1_index, roi_vl);
+                v2_tmp = vloxei16_v_u8m1(data_ptr, v2_index, roi_vl);
+                v3_tmp = vloxei16_v_u8m1(data_ptr, v3_index, roi_vl);
+                v4_tmp = vloxei16_v_u8m1(data_ptr, v4_index, roi_vl);
+                v1 = vwaddu_vx_u16m2(v1_tmp, 0, roi_vl);
+                v2 = vwaddu_vx_u16m2(v2_tmp, 0, roi_vl);
+                v3 = vwaddu_vx_u16m2(v3_tmp, 0, roi_vl);
+                v4 = vwaddu_vx_u16m2(v4_tmp, 0, roi_vl);
 
-                w1_tmp = vmul_vv_u16m2(hy, hx);            
-                w2_tmp = vmul_vv_u16m2(hy, lx);
-                w3_tmp = vmul_vv_u16m2(ly, hx);
-                w4_tmp = vmul_vv_u16m2(ly, lx);
-                w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift);
-                w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift);
-                w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift);
-                w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift);
+                w1_tmp = vmul_vv_u16m2(hy, hx, roi_vl);            
+                w2_tmp = vmul_vv_u16m2(hy, lx, roi_vl);
+                w3_tmp = vmul_vv_u16m2(ly, hx, roi_vl);
+                w4_tmp = vmul_vv_u16m2(ly, lx, roi_vl);
+                w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift, roi_vl);
+                w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift, roi_vl);
+                w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift, roi_vl);
+                w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift, roi_vl);
 
-                vuint32m4_t val_pooled1_tmp = vwmulu_vv_u32m4(w1, v1);
-                val_pooled1_tmp = vwmaccu_vv_u32m4(val_pooled1_tmp, w2, v2);
-                val_pooled1_tmp = vwmaccu_vv_u32m4(val_pooled1_tmp, w3, v3);
-                val_pooled1_tmp = vwmaccu_vv_u32m4(val_pooled1_tmp, w4, v4);
-                vuint16m2_t val_pooled1 = vnsrl_wx_u16m2(val_pooled1_tmp, (uint16_t)roi_shift);
+                vuint32m4_t val_pooled1_tmp = vwmulu_vv_u32m4(w1, v1, roi_vl);
+                val_pooled1_tmp = vwmaccu_vv_u32m4(val_pooled1_tmp, w2, v2, roi_vl);
+                val_pooled1_tmp = vwmaccu_vv_u32m4(val_pooled1_tmp, w3, v3, roi_vl);
+                val_pooled1_tmp = vwmaccu_vv_u32m4(val_pooled1_tmp, w4, v4, roi_vl);
+                vuint16m2_t val_pooled1 = vnsrl_wx_u16m2(val_pooled1_tmp, (uint16_t)roi_shift, roi_vl);
 
                 // // pooled2 iy=1,ix=0,
                 // y=roi_start_h+ph*bin_size_h+grid_h,  x=roi_start_w+pw*bin_size_w+3*grid_w
-                y_low = vsrl_vx_u16m2(y_tmp_grid_h, (uint16_t)roi_shift);      
-                x_low = vsrl_vx_u16m2(x_tmp_grid_w3, (uint16_t)roi_shift);
-                y_low_mask = vmsleu_vx_u16m2_b8(y_low, src_height);
-                x_low_mask = vmsleu_vx_u16m2_b8(x_low, src_width);
-                y_low_mask_n = vmnot_m_b8(y_low_mask);
-                x_low_mask_n = vmnot_m_b8(x_low_mask);
-                y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1);
-                x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1);
-                y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h, y_low, (uint16_t)roi_shift);
-                x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w3, x_low, (uint16_t)roi_shift);
+                y_low = vsrl_vx_u16m2(y_tmp_grid_h, (uint16_t)roi_shift, roi_vl);      
+                x_low = vsrl_vx_u16m2(x_tmp_grid_w3, (uint16_t)roi_shift, roi_vl);
+                y_low_mask = vmsleu_vx_u16m2_b8(y_low, src_height, roi_vl);
+                x_low_mask = vmsleu_vx_u16m2_b8(x_low, src_width, roi_vl);
+                y_low_mask_n = vmnot_m_b8(y_low_mask, roi_vl);
+                x_low_mask_n = vmnot_m_b8(x_low_mask, roi_vl);
+                y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1, roi_vl);
+                x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1, roi_vl);
+                y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h, y_low, (uint16_t)roi_shift, roi_vl);
+                x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w3, x_low, (uint16_t)roi_shift, roi_vl);
 
-                ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift);
-                lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift);
-                ly = vsub_vv_u16m2(y, ly_tmp);
-                lx = vsub_vv_u16m2(x, lx_tmp);
-                hy = vrsub_vx_u16m2(ly, roi_shifted);
-                hx = vrsub_vx_u16m2(lx, roi_shifted);
+                ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift, roi_vl);
+                lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift, roi_vl);
+                ly = vsub_vv_u16m2(y, ly_tmp, roi_vl);
+                lx = vsub_vv_u16m2(x, lx_tmp, roi_vl);
+                hy = vrsub_vx_u16m2(ly, roi_shifted, roi_vl);
+                hx = vrsub_vx_u16m2(lx, roi_shifted, roi_vl);
 
-                v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low);
-                v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low);
-                v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high);
-                v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high);
+                v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low, roi_vl);
+                v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low, roi_vl);
+                v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high, roi_vl);
+                v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high, roi_vl);
 
-                v1_tmp = vlxei16_v_u8m1(data_ptr, v1_index);
-                v2_tmp = vlxei16_v_u8m1(data_ptr, v2_index);
-                v3_tmp = vlxei16_v_u8m1(data_ptr, v3_index);
-                v4_tmp = vlxei16_v_u8m1(data_ptr, v4_index);
-                v1 = vwaddu_vx_u16m2(v1_tmp, 0);
-                v2 = vwaddu_vx_u16m2(v2_tmp, 0);
-                v3 = vwaddu_vx_u16m2(v3_tmp, 0);
-                v4 = vwaddu_vx_u16m2(v4_tmp, 0);
+                v1_tmp = vloxei16_v_u8m1(data_ptr, v1_index, roi_vl);
+                v2_tmp = vloxei16_v_u8m1(data_ptr, v2_index, roi_vl);
+                v3_tmp = vloxei16_v_u8m1(data_ptr, v3_index, roi_vl);
+                v4_tmp = vloxei16_v_u8m1(data_ptr, v4_index, roi_vl);
+                v1 = vwaddu_vx_u16m2(v1_tmp, 0, roi_vl);
+                v2 = vwaddu_vx_u16m2(v2_tmp, 0, roi_vl);
+                v3 = vwaddu_vx_u16m2(v3_tmp, 0, roi_vl);
+                v4 = vwaddu_vx_u16m2(v4_tmp, 0, roi_vl);
 
-                w1_tmp = vmul_vv_u16m2(hy, hx);            
-                w2_tmp = vmul_vv_u16m2(hy, lx);
-                w3_tmp = vmul_vv_u16m2(ly, hx);
-                w4_tmp = vmul_vv_u16m2(ly, lx);
-                w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift);
-                w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift);
-                w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift);
-                w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift);
+                w1_tmp = vmul_vv_u16m2(hy, hx, roi_vl);            
+                w2_tmp = vmul_vv_u16m2(hy, lx, roi_vl);
+                w3_tmp = vmul_vv_u16m2(ly, hx, roi_vl);
+                w4_tmp = vmul_vv_u16m2(ly, lx, roi_vl);
+                w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift, roi_vl);
+                w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift, roi_vl);
+                w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift, roi_vl);
+                w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift, roi_vl);
 
-                vuint32m4_t val_pooled2_tmp = vwmulu_vv_u32m4(w1, v1);
-                val_pooled2_tmp = vwmaccu_vv_u32m4(val_pooled2_tmp, w2, v2);
-                val_pooled2_tmp = vwmaccu_vv_u32m4(val_pooled2_tmp, w3, v3);
-                val_pooled2_tmp = vwmaccu_vv_u32m4(val_pooled2_tmp, w4, v4);
-                vuint16m2_t val_pooled2 = vnsrl_wx_u16m2(val_pooled2_tmp, (uint16_t)roi_shift);
+                vuint32m4_t val_pooled2_tmp = vwmulu_vv_u32m4(w1, v1, roi_vl);
+                val_pooled2_tmp = vwmaccu_vv_u32m4(val_pooled2_tmp, w2, v2, roi_vl);
+                val_pooled2_tmp = vwmaccu_vv_u32m4(val_pooled2_tmp, w3, v3, roi_vl);
+                val_pooled2_tmp = vwmaccu_vv_u32m4(val_pooled2_tmp, w4, v4, roi_vl);
+                vuint16m2_t val_pooled2 = vnsrl_wx_u16m2(val_pooled2_tmp, (uint16_t)roi_shift, roi_vl);
 
                 // // pooled3 iy=1,ix=1,
                 // // y=roi_start_h+ph*bin_size_h+3*grid_h,  x=roi_start_w+pw*bin_size_w+3*grid_w
-                y_low = vsrl_vx_u16m2(y_tmp_grid_h3, (uint16_t)roi_shift);      
-                x_low = vsrl_vx_u16m2(x_tmp_grid_w3, (uint16_t)roi_shift);
-                y_low_mask = vmsleu_vx_u16m2_b8(y_low, src_height);
-                x_low_mask = vmsleu_vx_u16m2_b8(x_low, src_width);
-                y_low_mask_n = vmnot_m_b8(y_low_mask);
-                x_low_mask_n = vmnot_m_b8(x_low_mask);
-                y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1);
-                x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1);
-                y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h3, y_low, (uint16_t)roi_shift);
-                x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w3, x_low, (uint16_t)roi_shift);
+                y_low = vsrl_vx_u16m2(y_tmp_grid_h3, (uint16_t)roi_shift, roi_vl);      
+                x_low = vsrl_vx_u16m2(x_tmp_grid_w3, (uint16_t)roi_shift, roi_vl);
+                y_low_mask = vmsleu_vx_u16m2_b8(y_low, src_height, roi_vl);
+                x_low_mask = vmsleu_vx_u16m2_b8(x_low, src_width, roi_vl);
+                y_low_mask_n = vmnot_m_b8(y_low_mask, roi_vl);
+                x_low_mask_n = vmnot_m_b8(x_low_mask, roi_vl);
+                y_high = vadd_vx_u16m2_m(y_low_mask, maskedoff_height, y_low, 1, roi_vl);
+                x_high = vadd_vx_u16m2_m(x_low_mask, maskedoff_width, x_low, 1, roi_vl);
+                y = vsll_vx_u16m2_m(y_low_mask_n, y_tmp_grid_h3, y_low, (uint16_t)roi_shift, roi_vl);
+                x = vsll_vx_u16m2_m(x_low_mask_n, x_tmp_grid_w3, x_low, (uint16_t)roi_shift, roi_vl);
 
-                ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift);
-                lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift);
-                ly = vsub_vv_u16m2(y, ly_tmp);
-                lx = vsub_vv_u16m2(x, lx_tmp);
-                hy = vrsub_vx_u16m2(ly, roi_shifted);
-                hx = vrsub_vx_u16m2(lx, roi_shifted);
+                ly_tmp = vsll_vx_u16m2(y_low, (uint16_t)roi_shift, roi_vl);
+                lx_tmp = vsll_vx_u16m2(x_low, (uint16_t)roi_shift, roi_vl);
+                ly = vsub_vv_u16m2(y, ly_tmp, roi_vl);
+                lx = vsub_vv_u16m2(x, lx_tmp, roi_vl);
+                hy = vrsub_vx_u16m2(ly, roi_shifted, roi_vl);
+                hx = vrsub_vx_u16m2(lx, roi_shifted, roi_vl);
 
-                v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low);
-                v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low);
-                v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high);
-                v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high);
+                v1_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_low, roi_vl);
+                v2_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_low, roi_vl);
+                v3_index = vmacc_vx_u16m2(x_low, (uint16_t)src_width, y_high, roi_vl);
+                v4_index = vmacc_vx_u16m2(x_high, (uint16_t)src_width, y_high, roi_vl);
 
-                v1_tmp = vlxei16_v_u8m1(data_ptr, v1_index);
-                v2_tmp = vlxei16_v_u8m1(data_ptr, v2_index);
-                v3_tmp = vlxei16_v_u8m1(data_ptr, v3_index);
-                v4_tmp = vlxei16_v_u8m1(data_ptr, v4_index);
-                v1 = vwaddu_vx_u16m2(v1_tmp, 0);
-                v2 = vwaddu_vx_u16m2(v2_tmp, 0);
-                v3 = vwaddu_vx_u16m2(v3_tmp, 0);
-                v4 = vwaddu_vx_u16m2(v4_tmp, 0);
+                v1_tmp = vloxei16_v_u8m1(data_ptr, v1_index, roi_vl);
+                v2_tmp = vloxei16_v_u8m1(data_ptr, v2_index, roi_vl);
+                v3_tmp = vloxei16_v_u8m1(data_ptr, v3_index, roi_vl);
+                v4_tmp = vloxei16_v_u8m1(data_ptr, v4_index, roi_vl);
+                v1 = vwaddu_vx_u16m2(v1_tmp, 0, roi_vl);
+                v2 = vwaddu_vx_u16m2(v2_tmp, 0, roi_vl);
+                v3 = vwaddu_vx_u16m2(v3_tmp, 0, roi_vl);
+                v4 = vwaddu_vx_u16m2(v4_tmp, 0, roi_vl);
 
-                w1_tmp = vmul_vv_u16m2(hy, hx);            
-                w2_tmp = vmul_vv_u16m2(hy, lx);
-                w3_tmp = vmul_vv_u16m2(ly, hx);
-                w4_tmp = vmul_vv_u16m2(ly, lx);
-                w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift);
-                w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift);
-                w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift);
-                w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift);
+                w1_tmp = vmul_vv_u16m2(hy, hx, roi_vl);            
+                w2_tmp = vmul_vv_u16m2(hy, lx, roi_vl);
+                w3_tmp = vmul_vv_u16m2(ly, hx, roi_vl);
+                w4_tmp = vmul_vv_u16m2(ly, lx, roi_vl);
+                w1 = vsrl_vx_u16m2(w1_tmp, (uint16_t)roi_shift, roi_vl);
+                w2 = vsrl_vx_u16m2(w2_tmp, (uint16_t)roi_shift, roi_vl);
+                w3 = vsrl_vx_u16m2(w3_tmp, (uint16_t)roi_shift, roi_vl);
+                w4 = vsrl_vx_u16m2(w4_tmp, (uint16_t)roi_shift, roi_vl);
 
-                vuint32m4_t val_pooled3_tmp = vwmulu_vv_u32m4(w1, v1);
-                val_pooled3_tmp = vwmaccu_vv_u32m4(val_pooled3_tmp, w2, v2);
-                val_pooled3_tmp = vwmaccu_vv_u32m4(val_pooled3_tmp, w3, v3);
-                val_pooled3_tmp = vwmaccu_vv_u32m4(val_pooled3_tmp, w4, v4);
-                vuint16m2_t val_pooled3 = vnsrl_wx_u16m2(val_pooled3_tmp, (uint16_t)roi_shift);
+                vuint32m4_t val_pooled3_tmp = vwmulu_vv_u32m4(w1, v1, roi_vl);
+                val_pooled3_tmp = vwmaccu_vv_u32m4(val_pooled3_tmp, w2, v2, roi_vl);
+                val_pooled3_tmp = vwmaccu_vv_u32m4(val_pooled3_tmp, w3, v3, roi_vl);
+                val_pooled3_tmp = vwmaccu_vv_u32m4(val_pooled3_tmp, w4, v4, roi_vl);
+                vuint16m2_t val_pooled3 = vnsrl_wx_u16m2(val_pooled3_tmp, (uint16_t)roi_shift, roi_vl);
 
-                vuint16m2_t val_pooled = vadd_vv_u16m2(val_pooled0, val_pooled1);
-                val_pooled = vadd_vv_u16m2(val_pooled, val_pooled2);
-                val_pooled = vadd_vv_u16m2(val_pooled, val_pooled3);
-                val_pooled = vsrl_vx_u16m2(val_pooled, (uint16_t)(2));   
+                vuint16m2_t val_pooled = vadd_vv_u16m2(val_pooled0, val_pooled1, roi_vl);
+                val_pooled = vadd_vv_u16m2(val_pooled, val_pooled2, roi_vl);
+                val_pooled = vadd_vv_u16m2(val_pooled, val_pooled3, roi_vl);
+                val_pooled = vsrl_vx_u16m2(val_pooled, (uint16_t)(2), roi_vl);   
 
                 ptrdiff_t roi_stride = out_hwc_stride * 2;
-                vsse16_v_u16m2(out_ptr, roi_stride, val_pooled);
+                vsse16_v_u16m2(out_ptr, roi_stride, val_pooled, roi_vl);
 
                 out_ptr += out_hw_stride;
                 data_ptr += src_hw;
