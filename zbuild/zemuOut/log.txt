@@ -1,0 +1,10 @@
+Global frequency set at 1000000000000 ticks per second
+/jenkins/workspace/zcc_rel_1.x@2/zemu/src/base/statistics.hh:250: warn: One of the stats is a legacy stat. Legacy stat is a stat that does not belong to any statistics::Group. Legacy stat is deprecated.
+/jenkins/workspace/zcc_rel_1.x@2/zemu/src/arch/riscv/linux/se_workload.cc:58: warn: Unknown operating system; assuming Linux.
+tripleName: riscv32
+cpu: generic-rv32
+features: +m,+a,+f,+d,+c,
+/jenkins/workspace/zcc_rel_1.x@2/zemu/src/sim/simulate.cc:100: info: Entering event queue @ 0.  Starting simulation...
+/jenkins/workspace/zcc_rel_1.x@2/zemu/src/arch/riscv/faults.cc:157: panic: Unknown instruction 0x0412f8d7 at pc 0x000000008000152c
+Memory Usage: 8485516 KBytes
+Program aborted at tick 9500
