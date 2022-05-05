@@ -50,9 +50,10 @@ void correlation_golden(struct correlation_param *param){
     int8_t* out_arr = param->out_ptr;
 
     size_t in_idx1 = 0, in_idx2 = 0, out_idx = 0;
-    for (size_t d = 0; d < out_channel; ++d){
-        for (size_t i = 0; i < height; ++i){
-            for (size_t j = 0; j < width; ++j){
+    
+    for (size_t i = 0; i < height; ++i){
+        for (size_t j = 0; j < width; ++j){
+            for (size_t d = 0; d < out_channel; ++d){
                 out_idx = d * width * height + i * width + j;
                 int16_t sum_data = 0;
                 for (size_t k = 0; k < in_channel; ++k)

@@ -53,9 +53,9 @@ void warp_golden(struct warp_param * restrict param){
     int16_t offset_val, offset_int;
     int16_t left_val, right_val, left_weight, right_weight;;
 
-    for (size_t c = 0; c < channel; c++){
-        for (size_t h = 0; h < height; h++){
-            for (size_t w = 0; w < width; w++){
+    for (size_t h = 0; h < height; h++){
+        for (size_t w = 0; w < width; w++){
+            for (size_t c = 0; c < channel; c++){
                 // get offset
                 offset_idx = h*width + w;
                 offset_val = offset_arr[offset_idx];
