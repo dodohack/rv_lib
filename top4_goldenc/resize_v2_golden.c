@@ -11,7 +11,7 @@
 #include "../com_lib/printf.h"
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MIN(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define CLIP(a, min, max) min(max(min, a), max)
 
 struct resize_param{

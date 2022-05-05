@@ -62,15 +62,15 @@ void warp_golden(struct warp_param * restrict param){
                 offset_int = offset_val >> offset_fl;
                 feat_idx = c*height*width + offset_idx;
                 // judge whether idx out of boundary
-                if ((feat_idx - offset_int -1) < channel*height*width) {
+                if ((feat_idx - offset_int -1) >= channel*height*width) {
                     left_val = 0;
                     right_val = 0;
                 } else {
                     left_val = (w - offset_int) >= 1 ? (int16_t)src_arr[feat_idx - offset_int - 1] : 0;
                     right_val = (w - offset_int) >= 0 ? (int16_t)src_arr[feat_idx - offset_int] : 0;
                 }
-                //left_val = (((int16_t)(w - offset_int - 1) >= 0) && ((feat_idx - offset_int -1) < channel*height*width)) ? (int16_t)src_arr[feat_idx - offset_int - 1] : 0;
-                //right_val = (((int16_t)(w - offset_int) >= 0) && ((feat_idx - offset_int -1) < channel*height*width)) ? (int16_t)src_arr[feat_idx - offset_int] : 0;
+                // left_val = (((int16_t)(w - offset_int - 1) >= 0) && ((feat_idx - offset_int -1) < channel*height*width)) ? (int16_t)src_arr[feat_idx - offset_int - 1] : 0;
+                // right_val = (((int16_t)(w - offset_int) >= 0) && ((feat_idx - offset_int -1) < channel*height*width)) ? (int16_t)src_arr[feat_idx - offset_int] : 0;
 
                 // linear interpolation             
                 left_weight = offset_val - (offset_int << offset_fl);
