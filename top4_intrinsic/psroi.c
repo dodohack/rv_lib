@@ -58,6 +58,7 @@ void psroi_param_read(struct psroi_param *param, int32_t* rvv_instr_reg) {
     param->out_arr = out_arr_global;
 }
 
+__attribute__((noinline))
 void psroi_pooling_align_vec(struct psroi_param *param){
     uint8_t *data_ptr = param->src_arr;
     uint16_t *rois_arr = param->rois_arr;

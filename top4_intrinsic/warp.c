@@ -32,6 +32,7 @@ void warp_param_read(struct warp_param *param, int32_t* rvv_instr_reg) {
     param->out_ptr = out_arr_global;
 }
 
+__attribute__((noinline))
 void warp_vec(struct warp_param *param) {
 
     size_t channel = param->channel;

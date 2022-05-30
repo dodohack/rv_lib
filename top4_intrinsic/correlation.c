@@ -32,6 +32,7 @@ void correlation_param_read(struct correlation_param *param, int32_t* rvv_instr_
     param->out_ptr = out_arr_global;
 }
 
+__attribute__((noinline))
 void correlation_vec(struct correlation_param *param){
     size_t in_channel = param->in_channel;
     size_t height = param->height;

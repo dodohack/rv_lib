@@ -25,6 +25,7 @@ void resize_param_read(struct resize_param *param, int32_t* rvv_instr_reg) {
     param->out_ptr = out_arr_global;
 }
 
+__attribute__((noinline))
 void resize_vec(struct resize_param *param){
     uint16_t channel = param->channel;
     uint16_t height = param->height;

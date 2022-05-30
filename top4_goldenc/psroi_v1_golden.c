@@ -133,7 +133,7 @@ void psroi_align_golden(uint8_t *data,
     uint32_t out_hwc_stride = pooled_h * pooled_w * pooled_c;
     uint32_t out_hw_stride = pooled_h * pooled_w;
 
-    for (uint32_t i=0; i<rois_num; i++){
+    for (uint32_t i = 0; i < rois_num; i++){
         data_ptr = data;
         uint16_t roi_start_w = rois_arr[4 * i];
         uint16_t roi_start_h = rois_arr[4 * i + 1];
@@ -198,7 +198,7 @@ void psroi_pooling_align_golden(struct psroi_param *param){
     uint8_t sampling_ratio = param->sampling_ratio;
     uint8_t roi_shift = param->roi_shift;
 
-    for (uint32_t i=0; i<src_k2; i++){
+    for (uint32_t i = 0; i < src_k2; i++){
         psroi_align_golden(src_ptr,
                         rois_arr,
                         out_data,

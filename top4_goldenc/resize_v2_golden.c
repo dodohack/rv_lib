@@ -51,28 +51,29 @@ void resize_golden_v2(struct resize_param *param){
     for (uint16_t c = 0; c < channel; c++){
         for (uint16_t h = 0; h < dst_height; h++){
             // cnt = 0;
+            uint16_t input_y = h << (hw_fl-1);
+            uint16_t y0 = input_y >> hw_fl;
+            uint16_t y1 = MIN(y0+1, height-1);
+            uint8_t factor = (uint8_t)1 << hw_fl;
+            uint8_t h1_lambda = (uint8_t)(input_y - (y0 << hw_fl));
+            uint8_t h0_lambda = factor - h1_lambda;
+            uint32_t y0_index = c*width*height + y0*width;
+            uint32_t y1_index = c*width*height + y1*width;
+            uint32_t dst_base = c*dst_width*dst_height + h*dst_width;
             for (uint16_t w = 0; w < dst_width; w++){
-            
-                uint16_t input_y = h << (hw_fl-1);
-                uint16_t y0 = input_y >> hw_fl;
-                uint16_t y1 = MIN(y0+1, height-1);  
-           
                 uint16_t input_x = w << (hw_fl-1);
                 uint16_t x0 = (input_x >> hw_fl);
                 uint16_t x1 = MIN(x0+1, width-1);  
             
-                uint8_t factor = (uint8_t)1 << hw_fl;
-                uint8_t h1_lambda = (uint8_t)(input_y - (y0 << hw_fl));
-                uint8_t h0_lambda = factor - h1_lambda;
                 uint8_t w1_lambda = (uint8_t)(input_x - (x0 << hw_fl));
                 uint8_t w0_lambda = factor - w1_lambda;
 
-                uint32_t y0x0_index = c*width*height + y0*width + x0;
-                uint32_t y0x1_index = c*width*height + y0*width + x1;
-                uint32_t y1x0_index = c*width*height + y1*width + x0;
-                uint32_t y1x1_index = c*width*height + y1*width + x1;
+                uint32_t y0x0_index = y0_index + x0;
+                uint32_t y0x1_index = y0_index + x1;
+                uint32_t y1x0_index = y1_index + x0;
+                uint32_t y1x1_index = y1_index + x1;
 
-                uint32_t dst_index = c*dst_width*dst_height + h*dst_width + w;
+                uint32_t dst_index = dst_base + w;
                 int16_t sum1 = (w0_lambda * src_arr[y0x0_index] + w1_lambda * src_arr[y0x1_index]) >> hw_fl;
                 int16_t sum2 = (w0_lambda * src_arr[y1x0_index] + w1_lambda * src_arr[y1x1_index]) >> hw_fl;                
                 out_arr[dst_index] = (int8_t)((h0_lambda * sum1 + h1_lambda * sum2) >> hw_fl);
