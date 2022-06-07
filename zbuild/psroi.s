@@ -9,7 +9,7 @@
 read_rdcycle:                           # @read_rdcycle
 # %bb.0:                                # %entry
 	#APP
-	rdcycle	a0
+	csrr	a0, mcycle
 
 	#NO_APP
 	ret
@@ -149,93 +149,91 @@ psroi_param_read:                       # @psroi_param_read
 bilinear_interpolate:                   # @bilinear_interpolate
 # %bb.0:                                # %entry
 	sra	a6, a3, a5
-	bge	a6, a1, .LBB3_9
-# %bb.1:                                # %lor.lhs.false
-	sra	a6, a4, a5
-	bge	a6, a2, .LBB3_9
+	slt	a6, a6, a1
+	sra	a7, a4, a5
+	slt	a7, a7, a2
+	and	a7, a6, a7
+	li	a6, 0
+	beqz	a7, .LBB3_11
+# %bb.1:                                # %if.end
+	bgtz	a3, .LBB3_3
 # %bb.2:                                # %if.end
-	bgtz	a3, .LBB3_4
-# %bb.3:                                # %if.end
 	li	a3, 0
-.LBB3_4:                                # %if.end
-	bgtz	a4, .LBB3_6
-# %bb.5:                                # %if.end
-	li	a4, 0
-.LBB3_6:                                # %if.end
+.LBB3_3:                                # %if.end
 	lui	a6, 16
 	addi	a6, a6, -1
 	and	a7, a3, a6
-	srl	t0, a7, a5
+	bgtz	a4, .LBB3_5
+# %bb.4:                                # %if.end
+	li	a4, 0
+.LBB3_5:                                # %if.end
 	and	t1, a4, a6
+	srl	t0, a7, a5
 	addi	a7, a1, -1
 	srl	t1, t1, a5
-	bge	t0, a7, .LBB3_10
-# %bb.7:                                # %if.else
+	bge	t0, a7, .LBB3_8
+# %bb.6:                                # %if.else
 	addi	a7, t0, 1
 	addi	t3, a2, -1
-	blt	t1, t3, .LBB3_11
-.LBB3_8:                                # %if.then39
+	blt	t1, t3, .LBB3_9
+.LBB3_7:                                # %if.then32
 	sll	t2, t3, a5
 	mv	t1, t3
 	mv	a4, t2
-	j	.LBB3_12
-.LBB3_9:
-	li	a0, 0
-	ret
-.LBB3_10:                               # %if.then29
+	j	.LBB3_10
+.LBB3_8:                                # %if.then22
 	sll	a3, a7, a5
 	mv	t0, a7
 	addi	t3, a2, -1
-	bge	t1, t3, .LBB3_8
-.LBB3_11:                               # %if.else45
+	bge	t1, t3, .LBB3_7
+.LBB3_9:                                # %if.else38
 	addi	t3, t1, 1
 	sll	t2, t1, a5
-.LBB3_12:                               # %if.end47
+.LBB3_10:                               # %if.end40
 	sll	a1, t0, a5
-	sub	a1, a3, a1
+	sub	t5, a3, a1
 	sub	a3, a4, t2
-	and	t2, a1, a6
 	li	a4, 1
 	sll	a4, a4, a5
-	sub	t4, a4, a1
-	and	a1, a3, a6
-	sub	t5, a4, a3
+	sub	t2, a4, t5
+	sub	t4, a4, a3
 	mul	a4, t0, a2
-	add	a3, t1, a4
-	add	a3, a3, a0
-	lbu	t0, 0(a3)
+	add	a1, t1, a4
+	add	a1, a1, a0
+	lbu	t0, 0(a1)
 	add	a4, a4, t3
 	add	a4, a4, a0
 	lbu	t6, 0(a4)
 	mul	a2, a7, a2
-	add	a3, t1, a2
-	add	a3, a3, a0
-	lbu	a7, 0(a3)
+	add	a1, t1, a2
+	add	a1, a1, a0
+	lbu	a7, 0(a1)
 	add	a2, a2, t3
 	add	a0, a0, a2
 	lbu	a0, 0(a0)
-	and	a2, t5, a6
-	and	a4, t4, a6
-	mul	a3, a2, a4
-	srl	a3, a3, a5
-	mul	a4, a1, a4
-	srl	a4, a4, a5
-	mul	a2, a2, t2
+	mul	a2, t4, t2
+	and	a2, a2, a6
 	srl	a2, a2, a5
-	mul	a1, a1, t2
-	srl	a1, a1, a5
+	mul	a4, a3, t2
+	and	a4, a4, a6
+	srl	a4, a4, a5
+	mul	a1, t4, t5
 	and	a1, a1, a6
-	mul	a0, a1, a0
-	and	a1, a2, a6
-	mul	a1, a1, a7
-	and	a2, a4, a6
-	mul	a2, a2, t6
+	srl	a1, a1, a5
+	mul	a3, a3, t5
 	and	a3, a3, a6
-	mul	a3, a3, t0
-	add	a0, a0, a2
-	add	a0, a0, a3
+	srl	a3, a3, a5
+	mul	a0, a3, a0
+	mul	a1, a1, a7
+	mul	a3, a4, t6
+	mul	a2, a2, t0
+	add	a2, a2, a3
+	add	a1, a1, a2
 	add	a0, a0, a1
-	srl	a0, a0, a5
+	and	a0, a0, a6
+	srl	a6, a0, a5
+.LBB3_11:                               # %cleanup
+	mv	a0, a6
 	ret
 .Lfunc_end3:
 	.size	bilinear_interpolate, .Lfunc_end3-bilinear_interpolate
@@ -269,30 +267,29 @@ psroi_align_golden:                     # @psroi_align_golden
 	lw	a0, 64(sp)                      # 4-byte Folded Reload
 	beqz	a0, .LBB4_39
 # %bb.2:                                # %for.body.lr.ph.split.us
-	mv	t5, a6
 	mv	t2, a2
 	lw	a0, 152(sp)
 	divu	a2, a4, a6
 	mul	a1, a2, a6
-	sub	a3, a4, a1
-	lui	a1, 16
-	addi	t6, a1, -1
+	sub	a1, a4, a1
 	andi	t4, a0, 255
-	sw	a3, 12(sp)                      # 4-byte Folded Spill
-	and	s0, a3, t6
+	lui	a0, 16
+	addi	t6, a0, -1
+	sw	a1, 12(sp)                      # 4-byte Folded Spill
+	and	s0, a1, t6
 	sw	a2, 16(sp)                      # 4-byte Folded Spill
-	and	t3, a2, t6
+	and	t5, a2, t6
 	beqz	t4, .LBB4_30
 # %bb.3:                                # %for.body.us.us.preheader
 	lw	a0, 156(sp)
 	li	s1, 0
 	lw	a1, 148(sp)
 	lw	a2, 144(sp)
-	andi	s11, a0, 255
+	andi	t3, a0, 255
 	li	a3, 1
 	sll	s9, a3, a0
 	li	a3, 256
-	divu	a4, a3, t5
+	divu	a4, a3, a6
 	sw	a4, 8(sp)                       # 4-byte Folded Spill
 	lw	a4, 56(sp)                      # 4-byte Folded Reload
 	divu	a3, a3, a4
@@ -300,24 +297,23 @@ psroi_align_golden:                     # @psroi_align_golden
 	slli	a3, t4, 1
 	sw	a3, 0(sp)                       # 4-byte Folded Spill
 	slli	a3, a2, 16
-	srai	a4, a3, 16
+	srai	a3, a3, 16
+	sw	a3, 80(sp)                      # 4-byte Folded Spill
+	addi	s7, a3, -1
+	sll	a3, s7, a0
+	sw	a3, 76(sp)                      # 4-byte Folded Spill
 	slli	a3, a1, 16
 	srai	ra, a3, 16
-	mv	a6, a4
-	addi	a3, a4, -1
-	sw	a3, 80(sp)                      # 4-byte Folded Spill
-	sll	a3, a3, a0
-	sw	a3, 76(sp)                      # 4-byte Folded Spill
 	mul	a1, a1, a2
 	sw	a1, 36(sp)                      # 4-byte Folded Spill
-	addi	s6, ra, -1
-	sll	s7, s6, a0
-	sw	t2, 52(sp)                      # 4-byte Folded Spill
-	sw	s0, 48(sp)                      # 4-byte Folded Spill
-	sw	t3, 44(sp)                      # 4-byte Folded Spill
+	addi	s5, ra, -1
+	sll	s6, s5, a0
+	sw	a6, 52(sp)                      # 4-byte Folded Spill
+	sw	t2, 48(sp)                      # 4-byte Folded Spill
+	sw	s0, 44(sp)                      # 4-byte Folded Spill
 	sw	t5, 40(sp)                      # 4-byte Folded Spill
 	j	.LBB4_5
-.LBB4_4:                                # %for.cond67.for.cond.cleanup70_crit_edge.split.us.us.us
+.LBB4_4:                                # %for.cond56.for.cond.cleanup59_crit_edge.split.us.us.us
                                         #   in Loop: Header=BB4_5 Depth=1
 	lw	s1, 32(sp)                      # 4-byte Folded Reload
 	addi	s1, s1, 1
@@ -330,66 +326,68 @@ psroi_align_golden:                     # @psroi_align_golden
                                         #         Child Loop BB4_24 Depth 4
 	slli	a0, s1, 3
 	lw	a1, 24(sp)                      # 4-byte Folded Reload
-	add	a2, a1, a0
-	lhu	a7, 0(a2)
-	lhu	a1, 4(a2)
-	sub	a3, a1, a7
-	blt	s9, a3, .LBB4_7
+	add	a5, a1, a0
+	lh	a7, 0(a5)
+	lh	a1, 4(a5)
+	sub	a1, a1, a7
+	and	a3, a1, t6
+	mv	a1, s9
+	blt	a3, s9, .LBB4_7
 # %bb.6:                                # %for.body.us.us
                                         #   in Loop: Header=BB4_5 Depth=1
-	mv	a3, s9
+	mv	a1, a3
 .LBB4_7:                                # %for.body.us.us
                                         #   in Loop: Header=BB4_5 Depth=1
-	lhu	a1, 2(a2)
-	lhu	a2, 6(a2)
-	sub	a5, a2, a1
-	blt	s9, a5, .LBB4_9
+	lh	a3, 2(a5)
+	lh	a5, 6(a5)
+	sub	a5, a5, a3
+	and	a5, a5, t6
+	mv	a2, s9
+	blt	a5, s9, .LBB4_9
 # %bb.8:                                # %for.body.us.us
                                         #   in Loop: Header=BB4_5 Depth=1
-	mv	a5, s9
+	mv	a2, a5
 .LBB4_9:                                # %for.body.us.us
                                         #   in Loop: Header=BB4_5 Depth=1
 	li	a0, 0
-	and	a2, a3, t6
-	lw	a3, 8(sp)                       # 4-byte Folded Reload
-	mul	a2, a2, a3
-	srli	a2, a2, 8
-	and	a3, a5, t6
+	lw	a4, 8(sp)                       # 4-byte Folded Reload
+	mul	a1, a1, a4
+	slli	a1, a1, 16
+	srli	a1, a1, 24
 	lw	a4, 4(sp)                       # 4-byte Folded Reload
-	mul	a3, a3, a4
-	srli	a3, a3, 8
-	and	a5, a2, t6
-	lw	a4, 0(sp)                       # 4-byte Folded Reload
-	divu	s5, a5, a4
-	and	a5, a3, t6
-	divu	a4, a5, a4
-	sw	a4, 88(sp)                      # 4-byte Folded Spill
-	lw	a4, 16(sp)                      # 4-byte Folded Reload
-	mul	a3, a3, a4
-	add	a1, a1, a3
-	sw	a1, 84(sp)                      # 4-byte Folded Spill
-	lw	a1, 64(sp)                      # 4-byte Folded Reload
+	mul	a5, a2, a4
+	slli	a5, a5, 16
+	srli	a5, a5, 24
+	lw	a2, 0(sp)                       # 4-byte Folded Reload
+	divu	s11, a1, a2
+	divu	a2, a5, a2
+	sw	a2, 88(sp)                      # 4-byte Folded Spill
+	lw	a2, 16(sp)                      # 4-byte Folded Reload
+	mul	a5, a5, a2
+	add	a2, a5, a3
+	sw	a2, 84(sp)                      # 4-byte Folded Spill
+	lw	a2, 64(sp)                      # 4-byte Folded Reload
 	sw	s1, 32(sp)                      # 4-byte Folded Spill
-	mul	a1, s1, a1
-	sw	a1, 60(sp)                      # 4-byte Folded Spill
-	lw	a1, 12(sp)                      # 4-byte Folded Reload
-	mul	a2, a2, a1
+	mul	a2, s1, a2
+	sw	a2, 60(sp)                      # 4-byte Folded Spill
+	lw	a2, 12(sp)                      # 4-byte Folded Reload
+	mul	a1, a1, a2
+	add	t1, a1, a7
 	li	a1, 0
-	add	t1, a2, a7
 	lw	s2, 20(sp)                      # 4-byte Folded Reload
 	j	.LBB4_11
-.LBB4_10:                               # %for.cond81.for.cond.cleanup84_crit_edge.us.us.us
+.LBB4_10:                               # %for.cond70.for.cond.cleanup73_crit_edge.us.us.us
                                         #   in Loop: Header=BB4_11 Depth=2
-	lw	t3, 44(sp)                      # 4-byte Folded Reload
-	lw	a0, 68(sp)                      # 4-byte Folded Reload
-	add	a0, a0, t3
 	lw	t5, 40(sp)                      # 4-byte Folded Reload
-	mul	a0, a0, t5
-	lw	s0, 48(sp)                      # 4-byte Folded Reload
+	lw	a0, 68(sp)                      # 4-byte Folded Reload
+	add	a0, a0, t5
+	lw	a6, 52(sp)                      # 4-byte Folded Reload
+	mul	a0, a0, a6
+	lw	s0, 44(sp)                      # 4-byte Folded Reload
 	add	a0, a0, s0
 	srli	a1, s3, 2
 	slli	a0, a0, 1
-	lw	t2, 52(sp)                      # 4-byte Folded Reload
+	lw	t2, 48(sp)                      # 4-byte Folded Reload
 	add	a0, a0, t2
 	sh	a1, 0(a0)
 	lw	a1, 72(sp)                      # 4-byte Folded Reload
@@ -398,7 +396,7 @@ psroi_align_golden:                     # @psroi_align_golden
 	add	s2, s2, a0
 	lw	a0, 64(sp)                      # 4-byte Folded Reload
 	beq	a1, a0, .LBB4_4
-.LBB4_11:                               # %for.body71.us.us.us
+.LBB4_11:                               # %for.body60.us.us.us
                                         #   Parent Loop BB4_5 Depth=1
                                         # =>  This Loop Header: Depth=2
                                         #       Child Loop BB4_13 Depth 3
@@ -412,11 +410,11 @@ psroi_align_golden:                     # @psroi_align_golden
 	mul	a0, a0, a1
 	sw	a0, 68(sp)                      # 4-byte Folded Spill
 	j	.LBB4_13
-.LBB4_12:                               # %for.cond97.for.cond.cleanup100_crit_edge.us.us.us
+.LBB4_12:                               # %for.cond84.for.cond.cleanup87_crit_edge.us.us.us
                                         #   in Loop: Header=BB4_13 Depth=3
 	addi	s4, s4, 1
 	beq	s4, t4, .LBB4_10
-.LBB4_13:                               # %for.body85.us.us.us
+.LBB4_13:                               # %for.body74.us.us.us
                                         #   Parent Loop BB4_5 Depth=1
                                         #     Parent Loop BB4_11 Depth=2
                                         # =>    This Loop Header: Depth=3
@@ -428,133 +426,132 @@ psroi_align_golden:                     # @psroi_align_golden
 	lw	a1, 84(sp)                      # 4-byte Folded Reload
 	add	a0, a0, a1
 	slli	a0, a0, 16
-	srai	a2, a0, 16
-	mv	a0, a2
-	bgtz	a2, .LBB4_15
-# %bb.14:                               # %for.body85.us.us.us
+	srai	a1, a0, 16
+	mv	a0, a1
+	bgtz	a1, .LBB4_15
+# %bb.14:                               # %for.body74.us.us.us
                                         #   in Loop: Header=BB4_13 Depth=3
 	li	a0, 0
-.LBB4_15:                               # %for.body85.us.us.us
+.LBB4_15:                               # %for.body74.us.us.us
                                         #   in Loop: Header=BB4_13 Depth=3
-	sra	a2, a2, s11
-	bge	a2, a6, .LBB4_12
-# %bb.16:                               # %for.body101.us.us.us.us.preheader
+	sra	a1, a1, t3
+	lw	a2, 80(sp)                      # 4-byte Folded Reload
+	bge	a1, a2, .LBB4_12
+# %bb.16:                               # %for.body88.us205.us.us.preheader
                                         #   in Loop: Header=BB4_13 Depth=3
-	slli	a2, a0, 16
-	srli	a2, a2, 16
-	srl	a3, a2, s11
-	lw	a1, 80(sp)                      # 4-byte Folded Reload
-	slt	s0, a3, a1
-	bnez	s0, .LBB4_18
-# %bb.17:                               # %for.body101.us.us.us.us.preheader
+	slli	a1, a0, 16
+	srli	a1, a1, 16
+	srl	a5, a1, t3
+	slt	a3, a5, s7
+	bnez	a3, .LBB4_18
+# %bb.17:                               # %for.body88.us205.us.us.preheader
                                         #   in Loop: Header=BB4_13 Depth=3
-	mv	a5, a1
-	bge	a3, a1, .LBB4_19
+	mv	s0, s7
+	mv	a1, s7
+	bge	s7, a5, .LBB4_19
 	j	.LBB4_20
 .LBB4_18:                               #   in Loop: Header=BB4_13 Depth=3
-	addi	a5, a3, 1
-	blt	a3, a1, .LBB4_20
-.LBB4_19:                               # %for.body101.us.us.us.us.preheader
+	addi	s0, a5, 1
+	mv	a1, s7
+	blt	s7, a5, .LBB4_20
+.LBB4_19:                               # %for.body88.us205.us.us.preheader
                                         #   in Loop: Header=BB4_13 Depth=3
-	mv	a3, a1
-.LBB4_20:                               # %for.body101.us.us.us.us.preheader
+	mv	a1, a5
+.LBB4_20:                               # %for.body88.us205.us.us.preheader
                                         #   in Loop: Header=BB4_13 Depth=3
-	bnez	s0, .LBB4_22
-# %bb.21:                               # %for.body101.us.us.us.us.preheader
+	bnez	a3, .LBB4_22
+# %bb.21:                               # %for.body88.us205.us.us.preheader
                                         #   in Loop: Header=BB4_13 Depth=3
 	lw	a0, 76(sp)                      # 4-byte Folded Reload
-.LBB4_22:                               # %for.body101.us.us.us.us.preheader
+.LBB4_22:                               # %for.body88.us205.us.us.preheader
                                         #   in Loop: Header=BB4_13 Depth=3
 	li	t5, 0
-	sll	a2, a3, s11
-	sub	a0, a0, a2
-	and	s8, a0, t6
-	sub	a2, s9, a0
-	mul	a7, a3, ra
-	mul	t2, a5, ra
-	and	t0, a2, t6
+	sll	a3, a1, t3
+	sub	s8, a0, a3
+	sub	a7, s9, s8
+	mul	t2, a1, ra
+	mul	t0, s0, ra
 	j	.LBB4_24
 .LBB4_23:                               #   in Loop: Header=BB4_24 Depth=4
-	li	a2, 0
+	li	a1, 0
 	addi	t5, t5, 1
-	add	s3, s3, a2
-	beq	t5, t4, .LBB4_12
-.LBB4_24:                               # %for.body101.us.us.us.us
+	add	s3, s3, a1
+	beq	t4, t5, .LBB4_12
+.LBB4_24:                               # %for.body88.us205.us.us
                                         #   Parent Loop BB4_5 Depth=1
                                         #     Parent Loop BB4_11 Depth=2
                                         #       Parent Loop BB4_13 Depth=3
                                         # =>      This Inner Loop Header: Depth=4
-	slli	a2, t5, 1
-	ori	a2, a2, 1
-	mul	a2, a2, s5
-	add	a2, a2, t1
-	slli	a2, a2, 16
-	srai	a5, a2, 16
-	sra	a2, a5, s11
-	bge	a2, ra, .LBB4_23
-# %bb.25:                               # %if.end.i.us.us.us.us
+	slli	a1, t5, 1
+	ori	a1, a1, 1
+	mul	a1, a1, s11
+	add	a1, a1, t1
+	slli	a1, a1, 16
+	srai	a5, a1, 16
+	sra	a1, a5, t3
+	bge	a1, ra, .LBB4_23
+# %bb.25:                               # %if.end.i.us.us.us
                                         #   in Loop: Header=BB4_24 Depth=4
 	bgtz	a5, .LBB4_27
-# %bb.26:                               # %if.end.i.us.us.us.us
+# %bb.26:                               # %if.end.i.us.us.us
                                         #   in Loop: Header=BB4_24 Depth=4
 	li	a5, 0
-.LBB4_27:                               # %if.end.i.us.us.us.us
+.LBB4_27:                               # %if.end.i.us.us.us
                                         #   in Loop: Header=BB4_24 Depth=4
-	slli	a2, a5, 16
-	srli	a2, a2, 16
-	srl	s0, a2, s11
-	mv	s10, s7
+	slli	a1, a5, 16
+	srli	a1, a1, 16
+	srl	a1, a1, t3
 	mv	a3, s6
-	mv	a2, s6
-	mv	t3, s7
-	bge	s0, s6, .LBB4_29
-# %bb.28:                               # %if.else45.i.us.us.us.us
+	mv	s0, s5
+	mv	a6, s5
+	mv	s10, s6
+	bge	a1, s5, .LBB4_29
+# %bb.28:                               # %if.else38.i.us.us.us
                                         #   in Loop: Header=BB4_24 Depth=4
-	addi	a3, s0, 1
-	sll	s10, s0, s11
-	mv	a2, s0
-	mv	t3, a5
-.LBB4_29:                               # %if.end47.i.us.us.us.us
+	addi	s0, a1, 1
+	sll	a3, a1, t3
+	mv	a6, a1
+	mv	s10, a5
+.LBB4_29:                               # %if.end40.i.us.us.us
                                         #   in Loop: Header=BB4_24 Depth=4
-	sub	a5, t3, s10
-	and	s0, a5, t6
-	sub	a5, s9, a5
-	add	a1, a2, a7
-	add	a1, a1, s2
-	lbu	a1, 0(a1)
-	add	s1, a3, a7
+	sub	a1, s10, a3
+	sub	a3, s9, a1
+	add	a5, a6, t2
+	add	a5, a5, s2
+	lbu	a5, 0(a5)
+	add	s1, s0, t2
 	add	s1, s1, s2
 	lbu	s1, 0(s1)
-	add	a2, a2, t2
+	add	a2, a6, t0
 	add	a2, a2, s2
 	lbu	a2, 0(a2)
-	add	a3, a3, t2
-	add	a3, a3, s2
-	lbu	a3, 0(a3)
-	and	a5, a5, t6
-	mul	a0, a5, t0
-	srl	a0, a0, s11
-	mul	a4, s0, t0
-	srl	a4, a4, s11
-	mul	a5, a5, s8
-	srl	a5, a5, s11
-	mul	s0, s0, s8
-	srl	s0, s0, s11
-	and	s0, s0, t6
-	mul	a3, s0, a3
-	and	a5, a5, t6
-	mul	a2, a5, a2
-	and	a4, a4, t6
-	mul	a4, a4, s1
+	add	s0, s0, t0
+	add	s0, s0, s2
+	lbu	s0, 0(s0)
+	mul	a0, a3, a7
 	and	a0, a0, t6
-	mul	a0, a0, a1
-	add	a1, a3, a4
-	add	a0, a0, a1
+	srl	a0, a0, t3
+	mul	a4, a1, a7
+	and	a4, a4, t6
+	srl	a4, a4, t3
+	mul	a3, a3, s8
+	and	a3, a3, t6
+	srl	a3, a3, t3
+	mul	a1, a1, s8
+	and	a1, a1, t6
+	srl	a1, a1, t3
+	mul	a1, a1, s0
+	mul	a2, a3, a2
+	mul	a3, a4, s1
+	mul	a0, a0, a5
+	add	a0, a0, a3
 	add	a0, a0, a2
-	srl	a2, a0, s11
+	add	a0, a0, a1
+	and	a0, a0, t6
+	srl	a1, a0, t3
 	addi	t5, t5, 1
-	add	s3, s3, a2
-	bne	t5, t4, .LBB4_24
+	add	s3, s3, a1
+	bne	t4, t5, .LBB4_24
 	j	.LBB4_12
 .LBB4_30:                               # %for.body.us.preheader
 	li	a0, 0
@@ -569,7 +566,7 @@ psroi_align_golden:                     # @psroi_align_golden
 	addi	a2, a2, -2
 	seqz	a7, a2
 	j	.LBB4_32
-.LBB4_31:                               # %for.cond67.for.cond.cleanup70_crit_edge.split.us243
+.LBB4_31:                               # %for.cond56.for.cond.cleanup59_crit_edge.split.us226
                                         #   in Loop: Header=BB4_32 Depth=1
 	addi	a0, a0, 1
 	lw	a1, 28(sp)                      # 4-byte Folded Reload
@@ -582,16 +579,16 @@ psroi_align_golden:                     # @psroi_align_golden
 	mul	a5, a0, a2
 	lw	a1, 56(sp)                      # 4-byte Folded Reload
 	bnez	t1, .LBB4_35
-# %bb.33:                               # %for.body71.us231.preheader
+# %bb.33:                               # %for.body60.us214.preheader
                                         #   in Loop: Header=BB4_32 Depth=1
 	li	s1, 0
-.LBB4_34:                               # %for.body71.us231
+.LBB4_34:                               # %for.body60.us214
                                         #   Parent Loop BB4_32 Depth=1
                                         # =>  This Inner Loop Header: Depth=2
 	add	a2, s1, a5
 	mul	a2, a2, a1
-	add	a2, a2, t3
-	mul	a2, a2, t5
+	add	a2, a2, t5
+	mul	a2, a2, a6
 	add	a2, a2, s0
 	slli	a2, a2, 1
 	add	a2, a2, t2
@@ -599,8 +596,8 @@ psroi_align_golden:                     # @psroi_align_golden
 	ori	a2, s1, 1
 	add	a2, a2, a5
 	mul	a2, a2, a1
-	add	a2, a2, t3
-	mul	a2, a2, t5
+	add	a2, a2, t5
+	mul	a2, a2, a6
 	add	a2, a2, s0
 	slli	a2, a2, 1
 	add	a2, a2, t2
@@ -608,8 +605,8 @@ psroi_align_golden:                     # @psroi_align_golden
 	ori	a2, s1, 2
 	add	a2, a2, a5
 	mul	a2, a2, a1
-	add	a2, a2, t3
-	mul	a2, a2, t5
+	add	a2, a2, t5
+	mul	a2, a2, a6
 	add	a2, a2, s0
 	slli	a2, a2, 1
 	add	a2, a2, t2
@@ -617,45 +614,45 @@ psroi_align_golden:                     # @psroi_align_golden
 	ori	a2, s1, 3
 	add	a2, a2, a5
 	mul	a2, a2, a1
-	add	a2, a2, t3
-	mul	a2, a2, t5
+	add	a2, a2, t5
+	mul	a2, a2, a6
 	add	a2, a2, s0
 	slli	a2, a2, 1
 	add	a2, a2, t2
 	addi	s1, s1, 4
 	sh	zero, 0(a2)
 	bne	a3, s1, .LBB4_34
-.LBB4_35:                               # %for.cond67.for.cond.cleanup70_crit_edge.split.us243.unr-lcssa
+.LBB4_35:                               # %for.cond56.for.cond.cleanup59_crit_edge.split.us226.unr-lcssa
                                         #   in Loop: Header=BB4_32 Depth=1
 	bnez	a4, .LBB4_31
-# %bb.36:                               # %for.body71.us231.epil
+# %bb.36:                               # %for.body60.us214.epil
                                         #   in Loop: Header=BB4_32 Depth=1
 	add	a5, a5, s1
 	mul	a2, a5, a1
-	add	a2, a2, t3
-	mul	a2, a2, t5
+	add	a2, a2, t5
+	mul	a2, a2, a6
 	add	a2, a2, s0
 	slli	a2, a2, 1
 	add	a2, a2, t2
 	sh	zero, 0(a2)
 	bnez	t0, .LBB4_31
-# %bb.37:                               # %for.body71.us231.epil.1
+# %bb.37:                               # %for.body60.us214.epil.1
                                         #   in Loop: Header=BB4_32 Depth=1
 	addi	a2, a5, 1
 	mul	a2, a2, a1
-	add	a2, a2, t3
-	mul	a2, a2, t5
+	add	a2, a2, t5
+	mul	a2, a2, a6
 	add	a2, a2, s0
 	slli	a2, a2, 1
 	add	a2, a2, t2
 	sh	zero, 0(a2)
 	bnez	a7, .LBB4_31
-# %bb.38:                               # %for.body71.us231.epil.2
+# %bb.38:                               # %for.body60.us214.epil.2
                                         #   in Loop: Header=BB4_32 Depth=1
 	addi	a2, a5, 2
 	mul	a2, a2, a1
-	add	a2, a2, t3
-	mul	a2, a2, t5
+	add	a2, a2, t5
+	mul	a2, a2, a6
 	add	a2, a2, s0
 	slli	a2, a2, 1
 	add	a2, a2, t2
@@ -858,7 +855,7 @@ main:                                   # @main
 # %bb.4:                                # %for.body.lr.ph.i
 	li	s1, 0
 	#APP
-	rdcycle	s4
+	csrr	s4, mcycle
 
 	#NO_APP
 	li	s5, 2
@@ -889,7 +886,7 @@ main:                                   # @main
 	bne	s1, s9, .LBB6_5
 # %bb.6:                                # %psroi_pooling_align_golden.exit
 	#APP
-	rdcycle	a0
+	csrr	a0, mcycle
 
 	#NO_APP
 	sub	a1, a0, s4

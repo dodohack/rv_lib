@@ -9,7 +9,7 @@
 read_rdcycle:                           # @read_rdcycle
 # %bb.0:                                # %entry
 	#APP
-	rdcycle	a0
+	csrr	a0, mcycle
 
 	#NO_APP
 	ret
@@ -62,7 +62,7 @@ warp_golden:                            # @warp_golden
 	sw	s10, 16(sp)                     # 4-byte Folded Spill
 	sw	s11, 12(sp)                     # 4-byte Folded Spill
 	lw	a1, 16(a0)
-	sw	a1, 4(sp)                       # 4-byte Folded Spill
+	sw	a1, 0(sp)                       # 4-byte Folded Spill
 	beqz	a1, .LBB2_2
 # %bb.1:                                # %for.cond5.preheader.lr.ph
 	lw	t2, 20(a0)
@@ -88,76 +88,78 @@ warp_golden:                            # @warp_golden
 	addi	sp, sp, 64
 	ret
 .LBB2_3:                                # %for.cond5.preheader.us.us.preheader
-	li	s5, 0
-	li	t0, 0
+	li	s6, 0
+	li	a3, 0
 	lw	a5, 24(a0)
 	lw	t6, 0(a0)
 	lw	t3, 4(a0)
 	lw	s9, 8(a0)
-	lw	a0, 4(sp)                       # 4-byte Folded Reload
+	lw	a0, 0(sp)                       # 4-byte Folded Reload
 	mul	t1, t2, a0
-	mul	ra, t1, a1
+	mul	a7, t1, a1
 	li	a0, 1
-	sll	a7, a0, a5
+	sll	t0, a0, a5
 	andi	a0, a1, 1
 	addi	a2, a1, -1
 	seqz	t4, a2
 	seqz	t5, a0
 	add	s3, s9, t1
-	slli	s7, t1, 1
+	slli	s4, t1, 1
 	andi	a0, a1, -2
 	neg	s8, a0
 	add	s2, t6, t1
 	addi	s10, t1, -1
+	lui	a0, 16
+	addi	s11, a0, -1
 	j	.LBB2_5
 .LBB2_4:                                # %for.cond5.for.cond.cleanup7_crit_edge.split.us.us.us
                                         #   in Loop: Header=BB2_5 Depth=1
-	addi	t0, t0, 1
-	lw	s5, 8(sp)                       # 4-byte Folded Reload
-	add	s5, s5, t2
-	lw	a0, 4(sp)                       # 4-byte Folded Reload
-	beq	t0, a0, .LBB2_2
+	lw	a3, 4(sp)                       # 4-byte Folded Reload
+	addi	a3, a3, 1
+	lw	s6, 8(sp)                       # 4-byte Folded Reload
+	add	s6, s6, t2
+	lw	a0, 0(sp)                       # 4-byte Folded Reload
+	beq	a3, a0, .LBB2_2
 .LBB2_5:                                # %for.cond5.preheader.us.us
                                         # =>This Loop Header: Depth=1
                                         #     Child Loop BB2_9 Depth 2
                                         #       Child Loop BB2_14 Depth 3
-	li	s11, 0
-	mul	s4, t0, t2
-	sw	s5, 8(sp)                       # 4-byte Folded Spill
+	li	ra, 0
+	sw	a3, 4(sp)                       # 4-byte Folded Spill
+	mul	s5, a3, t2
+	sw	s6, 8(sp)                       # 4-byte Folded Spill
 	j	.LBB2_9
 .LBB2_6:                                #   in Loop: Header=BB2_9 Depth=2
-	li	a2, 0
-	li	a3, 0
+	li	a4, 0
+	li	a1, 0
 .LBB2_7:                                # %if.end.us.us.us.epil
                                         #   in Loop: Header=BB2_9 Depth=2
-	slli	a4, s0, 16
-	srli	a4, a4, 16
-	sll	a1, a1, a5
-	sub	a1, a4, a1
-	slli	a4, a1, 16
-	srai	a4, a4, 16
-	sub	a1, a7, a1
+	slli	a2, a3, 16
+	srli	a2, a2, 16
+	sll	a3, s0, a5
+	sub	a2, a2, a3
+	sub	a3, t0, a2
+	mul	a3, a4, a3
+	mul	a1, a1, a2
+	add	a1, a1, a3
 	slli	a1, a1, 16
 	srai	a1, a1, 16
-	mul	a1, a2, a1
-	mul	a2, a3, a4
-	add	a1, a1, a2
 	sra	a1, a1, a5
 	add	a0, a0, s9
 	sb	a1, 0(a0)
 .LBB2_8:                                # %for.cond9.for.cond.cleanup11_crit_edge.us.us.us
                                         #   in Loop: Header=BB2_9 Depth=2
-	addi	s11, s11, 1
-	addi	s5, s5, 1
-	beq	s11, t2, .LBB2_4
+	addi	ra, ra, 1
+	addi	s6, s6, 1
+	beq	ra, t2, .LBB2_4
 .LBB2_9:                                # %for.cond9.preheader.us.us.us
                                         #   Parent Loop BB2_5 Depth=1
                                         # =>  This Loop Header: Depth=2
                                         #       Child Loop BB2_14 Depth 3
 	li	a0, 0
-	add	s6, s11, s4
-	slli	a1, s6, 1
-	add	a1, a1, t3
+	add	s7, ra, s5
+	slli	a1, s7, 1
+	add	s0, t3, a1
 	beqz	t4, .LBB2_11
 # %bb.10:                               # %for.cond9.for.cond.cleanup11_crit_edge.us.us.us.unr-lcssa
                                         #   in Loop: Header=BB2_9 Depth=2
@@ -165,86 +167,81 @@ warp_golden:                            # @warp_golden
 	j	.LBB2_26
 .LBB2_11:                               # %for.body12.us.us.us.preheader
                                         #   in Loop: Header=BB2_9 Depth=2
-	li	s0, 0
-	mv	a0, s5
+	li	a0, 0
+	mv	s1, s6
 	j	.LBB2_14
 .LBB2_12:                               #   in Loop: Header=BB2_14 Depth=3
 	li	a2, 0
 	li	a4, 0
 .LBB2_13:                               # %if.end.us.us.us.1
                                         #   in Loop: Header=BB2_14 Depth=3
-	slli	a3, a3, 16
-	srli	a3, a3, 16
-	sll	s1, s1, a5
-	sub	a3, a3, s1
-	slli	s1, a3, 16
-	srai	s1, s1, 16
-	sub	a3, a7, a3
-	slli	a3, a3, 16
-	srai	a3, a3, 16
+	and	a1, a1, s11
+	sll	a3, a3, a5
+	sub	a1, a1, a3
+	sub	a3, t0, a1
 	mul	a2, a2, a3
-	mul	a3, a4, s1
-	add	a2, a2, a3
-	sra	a2, a2, a5
-	add	a3, s3, a0
-	sb	a2, 0(a3)
-	addi	s0, s0, -2
-	add	a0, a0, s7
-	beq	s8, s0, .LBB2_25
+	mul	a1, a4, a1
+	add	a1, a1, a2
+	slli	a1, a1, 16
+	srai	a1, a1, 16
+	sra	a1, a1, a5
+	add	a2, s3, s1
+	sb	a1, 0(a2)
+	addi	a0, a0, -2
+	add	s1, s1, s4
+	beq	s8, a0, .LBB2_25
 .LBB2_14:                               # %for.body12.us.us.us
                                         #   Parent Loop BB2_5 Depth=1
                                         #     Parent Loop BB2_9 Depth=2
                                         # =>    This Inner Loop Header: Depth=3
-	lh	a3, 0(a1)
-	sra	s1, a3, a5
-	not	a2, s1
-	add	a2, a2, a0
-	bgeu	a2, ra, .LBB2_17
+	lh	a1, 0(s0)
+	sra	a3, a1, a5
+	not	a2, a3
+	add	a2, a2, s1
+	bgeu	a2, a7, .LBB2_17
 # %bb.15:                               # %if.else.us.us.us
                                         #   in Loop: Header=BB2_14 Depth=3
-	sub	a2, a0, s1
-	bne	s11, s1, .LBB2_18
+	sub	a2, s1, a3
+	bne	ra, a3, .LBB2_18
 # %bb.16:                               #   in Loop: Header=BB2_14 Depth=3
-	li	a4, 0
+	li	a6, 0
 	j	.LBB2_19
 .LBB2_17:                               #   in Loop: Header=BB2_14 Depth=3
-	li	a6, 0
 	li	a4, 0
+	li	a6, 0
 	j	.LBB2_20
 .LBB2_18:                               # %cond.true.us.us.us
                                         #   in Loop: Header=BB2_14 Depth=3
 	add	a4, t6, a2
-	lb	a4, -1(a4)
-.LBB2_19:                               # %cond.end45.us.us.us
+	lb	a6, -1(a4)
+.LBB2_19:                               # %cond.end43.us.us.us
                                         #   in Loop: Header=BB2_14 Depth=3
 	add	a2, a2, t6
-	lb	a6, 0(a2)
+	lb	a4, 0(a2)
 .LBB2_20:                               # %if.end.us.us.us
                                         #   in Loop: Header=BB2_14 Depth=3
-	slli	a2, a3, 16
-	srli	a2, a2, 16
-	sll	a3, s1, a5
+	slli	a1, a1, 16
+	srli	a1, a1, 16
+	sll	a2, a3, a5
+	sub	a1, a1, a2
+	sub	a2, t0, a1
+	mul	a2, a4, a2
+	mul	a1, a6, a1
+	add	a1, a1, a2
+	slli	a1, a1, 16
+	srai	a1, a1, 16
+	sra	a1, a1, a5
+	add	a2, s9, s1
+	sb	a1, 0(a2)
+	lh	a1, 0(s0)
+	sra	a3, a1, a5
+	add	a2, s10, s1
 	sub	a2, a2, a3
-	slli	a3, a2, 16
-	srai	a3, a3, 16
-	sub	a2, a7, a2
-	slli	a2, a2, 16
-	srai	a2, a2, 16
-	mul	a2, a6, a2
-	mul	a3, a4, a3
-	add	a2, a2, a3
-	sra	a2, a2, a5
-	add	a3, s9, a0
-	sb	a2, 0(a3)
-	lh	a3, 0(a1)
-	sra	s1, a3, a5
-	add	a2, s10, a0
-	sub	a2, a2, s1
-	bgeu	a2, ra, .LBB2_12
+	bgeu	a2, a7, .LBB2_12
 # %bb.21:                               # %if.else.us.us.us.1
                                         #   in Loop: Header=BB2_14 Depth=3
-	sub	a2, a0, s1
-	bne	s11, s1, .LBB2_23
+	sub	a2, s1, a3
+	bne	ra, a3, .LBB2_23
 # %bb.22:                               #   in Loop: Header=BB2_14 Depth=3
 	li	a4, 0
 	j	.LBB2_24
@@ -252,38 +249,38 @@ warp_golden:                            # @warp_golden
                                         #   in Loop: Header=BB2_14 Depth=3
 	add	a4, s2, a2
 	lb	a4, -1(a4)
-.LBB2_24:                               # %cond.end45.us.us.us.1
+.LBB2_24:                               # %cond.end43.us.us.us.1
                                         #   in Loop: Header=BB2_14 Depth=3
 	add	a2, a2, s2
 	lb	a2, 0(a2)
 	j	.LBB2_13
 .LBB2_25:                               # %for.cond9.for.cond.cleanup11_crit_edge.us.us.us.unr-lcssa.loopexit
                                         #   in Loop: Header=BB2_9 Depth=2
-	neg	a0, s0
+	neg	a0, a0
 	bnez	t5, .LBB2_8
 .LBB2_26:                               # %for.body12.us.us.us.epil
                                         #   in Loop: Header=BB2_9 Depth=2
-	lh	s0, 0(a1)
-	sra	a1, s0, a5
+	lh	a3, 0(s0)
+	sra	s0, a3, a5
 	mul	a0, t1, a0
-	add	a0, a0, s6
-	sub	a2, a0, a1
-	addi	a3, a2, -1
-	bgeu	a3, ra, .LBB2_6
+	add	a0, a0, s7
+	sub	a4, a0, s0
+	addi	a1, a4, -1
+	bgeu	a1, a7, .LBB2_6
 # %bb.27:                               # %if.else.us.us.us.epil
                                         #   in Loop: Header=BB2_9 Depth=2
-	bne	s11, a1, .LBB2_29
+	bne	ra, s0, .LBB2_29
 # %bb.28:                               #   in Loop: Header=BB2_9 Depth=2
-	li	a3, 0
+	li	a1, 0
 	j	.LBB2_30
 .LBB2_29:                               # %cond.true.us.us.us.epil
                                         #   in Loop: Header=BB2_9 Depth=2
-	add	a3, a3, t6
-	lb	a3, 0(a3)
-.LBB2_30:                               # %cond.end45.us.us.us.epil
+	add	a1, a1, t6
+	lb	a1, 0(a1)
+.LBB2_30:                               # %cond.end43.us.us.us.epil
                                         #   in Loop: Header=BB2_9 Depth=2
-	add	a2, a2, t6
-	lb	a2, 0(a2)
+	add	a2, t6, a4
+	lb	a4, 0(a2)
 	j	.LBB2_7
 .Lfunc_end2:
 	.size	warp_golden, .Lfunc_end2-warp_golden
@@ -314,7 +311,7 @@ main:                                   # @main
 	lui	s5, %hi(out_arr_global)
 	addi	a7, s5, %lo(out_arr_global)
 	#APP
-	rdcycle	a0
+	csrr	a0, mcycle
 
 	#NO_APP
 	sw	a0, 12(sp)                      # 4-byte Folded Spill
@@ -467,7 +464,7 @@ main:                                   # @main
 	j	.LBB3_12
 .LBB3_18:                               # %warp_golden.exit
 	#APP
-	rdcycle	a0
+	csrr	a0, mcycle
 
 	#NO_APP
 	lw	a1, 12(sp)                      # 4-byte Folded Reload
