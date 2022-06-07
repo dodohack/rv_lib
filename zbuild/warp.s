@@ -1,6 +1,6 @@
 	.text
 	.attribute	4, 16
-	.attribute	5, "rv32i2p0_m2p0_f2p0_d2p0_c2p0_v1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
+	.attribute	5, "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0_v0p10"
 	.option	nopic
 	.file	"warp_v1_golden.c"
 	.globl	read_rdcycle                    # -- Begin function read_rdcycle
@@ -525,7 +525,3 @@ out_arr_global:
 
 	.ident	"Terapines LTD zcc version 1.0.0 (https://www.terapines.com 9342a04ec5543841a5f8bc068eab6c665aba47ef)"
 	.section	".note.GNU-stack","",@progbits
-	.addrsig
-	.addrsig_sym src_arr_global
-	.addrsig_sym offset_arr_global
-	.addrsig_sym out_arr_global
