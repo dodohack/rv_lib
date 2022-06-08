@@ -4,7 +4,7 @@
 	.option	nopic
 	.file	"psroi_v1_golden.c"
 	.globl	read_rdcycle                    # -- Begin function read_rdcycle
-	.p2align	1
+	.p2align	2
 	.type	read_rdcycle,@function
 read_rdcycle:                           # @read_rdcycle
 # %bb.0:                                # %entry
@@ -17,7 +17,7 @@ read_rdcycle:                           # @read_rdcycle
 	.size	read_rdcycle, .Lfunc_end0-read_rdcycle
                                         # -- End function
 	.globl	global_arr_init                 # -- Begin function global_arr_init
-	.p2align	1
+	.p2align	2
 	.type	global_arr_init,@function
 global_arr_init:                        # @global_arr_init
 # %bb.0:                                # %entry
@@ -110,7 +110,7 @@ global_arr_init:                        # @global_arr_init
 	.size	global_arr_init, .Lfunc_end1-global_arr_init
                                         # -- End function
 	.globl	psroi_param_read                # -- Begin function psroi_param_read
-	.p2align	1
+	.p2align	2
 	.type	psroi_param_read,@function
 psroi_param_read:                       # @psroi_param_read
 # %bb.0:                                # %entry
@@ -144,7 +144,7 @@ psroi_param_read:                       # @psroi_param_read
 	.size	psroi_param_read, .Lfunc_end2-psroi_param_read
                                         # -- End function
 	.globl	bilinear_interpolate            # -- Begin function bilinear_interpolate
-	.p2align	1
+	.p2align	2
 	.type	bilinear_interpolate,@function
 bilinear_interpolate:                   # @bilinear_interpolate
 # %bb.0:                                # %entry
@@ -239,7 +239,7 @@ bilinear_interpolate:                   # @bilinear_interpolate
 	.size	bilinear_interpolate, .Lfunc_end3-bilinear_interpolate
                                         # -- End function
 	.globl	psroi_align_golden              # -- Begin function psroi_align_golden
-	.p2align	1
+	.p2align	2
 	.type	psroi_align_golden,@function
 psroi_align_golden:                     # @psroi_align_golden
 # %bb.0:                                # %entry
@@ -678,7 +678,7 @@ psroi_align_golden:                     # @psroi_align_golden
 	.size	psroi_align_golden, .Lfunc_end4-psroi_align_golden
                                         # -- End function
 	.globl	psroi_pooling_align_golden      # -- Begin function psroi_pooling_align_golden
-	.p2align	1
+	.p2align	2
 	.type	psroi_pooling_align_golden,@function
 psroi_pooling_align_golden:             # @psroi_pooling_align_golden
 # %bb.0:                                # %entry
@@ -753,7 +753,7 @@ psroi_pooling_align_golden:             # @psroi_pooling_align_golden
 	.size	psroi_pooling_align_golden, .Lfunc_end5-psroi_pooling_align_golden
                                         # -- End function
 	.globl	main                            # -- Begin function main
-	.p2align	1
+	.p2align	2
 	.type	main,@function
 main:                                   # @main
 # %bb.0:                                # %entry

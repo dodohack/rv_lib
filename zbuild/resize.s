@@ -4,7 +4,7 @@
 	.option	nopic
 	.file	"resize_v2_golden.c"
 	.globl	read_rdcycle                    # -- Begin function read_rdcycle
-	.p2align	1
+	.p2align	2
 	.type	read_rdcycle,@function
 read_rdcycle:                           # @read_rdcycle
 # %bb.0:                                # %entry
@@ -17,7 +17,7 @@ read_rdcycle:                           # @read_rdcycle
 	.size	read_rdcycle, .Lfunc_end0-read_rdcycle
                                         # -- End function
 	.globl	resize_param_read               # -- Begin function resize_param_read
-	.p2align	1
+	.p2align	2
 	.type	resize_param_read,@function
 resize_param_read:                      # @resize_param_read
 # %bb.0:                                # %entry
@@ -39,7 +39,7 @@ resize_param_read:                      # @resize_param_read
 	.size	resize_param_read, .Lfunc_end1-resize_param_read
                                         # -- End function
 	.globl	resize_golden_v2                # -- Begin function resize_golden_v2
-	.p2align	1
+	.p2align	2
 	.type	resize_golden_v2,@function
 resize_golden_v2:                       # @resize_golden_v2
 # %bb.0:                                # %entry
@@ -211,7 +211,7 @@ resize_golden_v2:                       # @resize_golden_v2
 	.size	resize_golden_v2, .Lfunc_end2-resize_golden_v2
                                         # -- End function
 	.globl	main                            # -- Begin function main
-	.p2align	1
+	.p2align	2
 	.type	main,@function
 main:                                   # @main
 # %bb.0:                                # %for.cond9.preheader.us.us.i

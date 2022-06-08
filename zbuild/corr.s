@@ -4,7 +4,7 @@
 	.option	nopic
 	.file	"correlation_v1_golden.c"
 	.globl	read_rdcycle                    # -- Begin function read_rdcycle
-	.p2align	1
+	.p2align	2
 	.type	read_rdcycle,@function
 read_rdcycle:                           # @read_rdcycle
 # %bb.0:                                # %entry
@@ -17,7 +17,7 @@ read_rdcycle:                           # @read_rdcycle
 	.size	read_rdcycle, .Lfunc_end0-read_rdcycle
                                         # -- End function
 	.globl	correlation_param_read          # -- Begin function correlation_param_read
-	.p2align	1
+	.p2align	2
 	.type	correlation_param_read,@function
 correlation_param_read:                 # @correlation_param_read
 # %bb.0:                                # %entry
@@ -45,7 +45,7 @@ correlation_param_read:                 # @correlation_param_read
 	.size	correlation_param_read, .Lfunc_end1-correlation_param_read
                                         # -- End function
 	.globl	correlation_golden              # -- Begin function correlation_golden
-	.p2align	1
+	.p2align	2
 	.type	correlation_golden,@function
 correlation_golden:                     # @correlation_golden
 # %bb.0:                                # %entry
@@ -433,7 +433,7 @@ correlation_golden:                     # @correlation_golden
 	.size	correlation_golden, .Lfunc_end2-correlation_golden
                                         # -- End function
 	.globl	main                            # -- Begin function main
-	.p2align	1
+	.p2align	2
 	.type	main,@function
 main:                                   # @main
 # %bb.0:                                # %for.cond6.preheader.lr.ph.split.us.split.us.i

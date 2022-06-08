@@ -4,7 +4,7 @@
 	.option	nopic
 	.file	"warp_v1_golden.c"
 	.globl	read_rdcycle                    # -- Begin function read_rdcycle
-	.p2align	1
+	.p2align	2
 	.type	read_rdcycle,@function
 read_rdcycle:                           # @read_rdcycle
 # %bb.0:                                # %entry
@@ -17,7 +17,7 @@ read_rdcycle:                           # @read_rdcycle
 	.size	read_rdcycle, .Lfunc_end0-read_rdcycle
                                         # -- End function
 	.globl	warp_param_read                 # -- Begin function warp_param_read
-	.p2align	1
+	.p2align	2
 	.type	warp_param_read,@function
 warp_param_read:                        # @warp_param_read
 # %bb.0:                                # %entry
@@ -43,7 +43,7 @@ warp_param_read:                        # @warp_param_read
 	.size	warp_param_read, .Lfunc_end1-warp_param_read
                                         # -- End function
 	.globl	warp_golden                     # -- Begin function warp_golden
-	.p2align	1
+	.p2align	2
 	.type	warp_golden,@function
 warp_golden:                            # @warp_golden
 # %bb.0:                                # %entry
@@ -286,7 +286,7 @@ warp_golden:                            # @warp_golden
 	.size	warp_golden, .Lfunc_end2-warp_golden
                                         # -- End function
 	.globl	main                            # -- Begin function main
-	.p2align	1
+	.p2align	2
 	.type	main,@function
 main:                                   # @main
 # %bb.0:                                # %for.cond5.preheader.lr.ph.i
