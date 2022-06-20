@@ -1,15 +1,15 @@
 	.text
 	.attribute	4, 16
-	.attribute	5, "rv32i2p0_m2p0_f2p0_d2p0_c2p0_v1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
+	.attribute	5, "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0_v0p10"
 	.option	nopic
 	.file	"correlation.c"
 	.globl	read_rdcycle                    # -- Begin function read_rdcycle
-	.p2align	1
+	.p2align	2
 	.type	read_rdcycle,@function
 read_rdcycle:                           # @read_rdcycle
 # %bb.0:                                # %entry
 	#APP
-	rdcycle	a0
+	csrr	a0, mcycle
 
 	#NO_APP
 	ret
@@ -17,7 +17,7 @@ read_rdcycle:                           # @read_rdcycle
 	.size	read_rdcycle, .Lfunc_end0-read_rdcycle
                                         # -- End function
 	.globl	correlation_param_read          # -- Begin function correlation_param_read
-	.p2align	1
+	.p2align	2
 	.type	correlation_param_read,@function
 correlation_param_read:                 # @correlation_param_read
 # %bb.0:                                # %entry
@@ -45,7 +45,7 @@ correlation_param_read:                 # @correlation_param_read
 	.size	correlation_param_read, .Lfunc_end1-correlation_param_read
                                         # -- End function
 	.globl	correlation_vec                 # -- Begin function correlation_vec
-	.p2align	1
+	.p2align	2
 	.type	correlation_vec,@function
 correlation_vec:                        # @correlation_vec
 # %bb.0:                                # %entry
@@ -240,221 +240,48 @@ correlation_vec:                        # @correlation_vec
 	.size	correlation_vec, .Lfunc_end2-correlation_vec
                                         # -- End function
 	.globl	main                            # -- Begin function main
-	.p2align	1
+	.p2align	2
 	.type	main,@function
 main:                                   # @main
 # %bb.0:                                # %entry
 	addi	sp, sp, -48
 	sw	ra, 44(sp)                      # 4-byte Folded Spill
 	sw	s0, 40(sp)                      # 4-byte Folded Spill
-	sw	s1, 36(sp)                      # 4-byte Folded Spill
-	sw	s2, 32(sp)                      # 4-byte Folded Spill
-	sw	s3, 28(sp)                      # 4-byte Folded Spill
-	sw	s4, 24(sp)                      # 4-byte Folded Spill
-	sw	s5, 20(sp)                      # 4-byte Folded Spill
-	sw	s6, 16(sp)                      # 4-byte Folded Spill
-	sw	s7, 12(sp)                      # 4-byte Folded Spill
-	sw	s8, 8(sp)                       # 4-byte Folded Spill
-	sw	s9, 4(sp)                       # 4-byte Folded Spill
-	#APP
-	rdcycle	a6
-
-	#NO_APP
-	li	t0, 88
-	vsetvli	a7, t0, e8, m2, ta, mu
-	beqz	a7, .LBB3_15
-# %bb.1:                                # %for.cond9.preheader.us.us.us.i.preheader
-	li	s7, 0
-	lui	a0, %hi(src1_arr_global)
-	addi	t1, a0, %lo(src1_arr_global)
+	li	a0, 58
+	sw	a0, 8(sp)
+	li	a0, 112
+	sw	a0, 12(sp)
+	li	a0, 88
+	sw	a0, 16(sp)
+	li	a0, 5
+	sw	a0, 20(sp)
+	sw	zero, 24(sp)
 	lui	a0, %hi(src0_arr_global)
-	addi	s9, a0, %lo(src0_arr_global)
-	lui	a1, 2
-	addi	a0, a1, 1664
-	lui	a2, %hi(out_arr_global)
-	addi	t2, a2, %lo(out_arr_global)
-	addi	t3, a1, 1665
-	lui	a1, 5
-	addi	t5, a1, -766
-	lui	a1, 7
-	addi	t6, a1, 899
-	lui	a1, 10
-	addi	s2, a1, -1532
-	li	t4, 112
-	li	s8, 88
-.LBB3_2:                                # %for.cond9.preheader.us.us.us.i
-                                        # =>This Loop Header: Depth=1
-                                        #     Child Loop BB3_3 Depth 2
-                                        #       Child Loop BB3_4 Depth 3
-                                        #       Child Loop BB3_6 Depth 3
-                                        #       Child Loop BB3_8 Depth 3
-                                        #       Child Loop BB3_10 Depth 3
-                                        #       Child Loop BB3_12 Depth 3
-	li	a2, 0
-	addi	s3, s8, -1
-	addi	s4, s8, -2
-	addi	s5, s8, -3
-	addi	s6, s8, -4
-.LBB3_3:                                # %for.cond12.preheader.us.us.us.us.us.i
-                                        #   Parent Loop BB3_2 Depth=1
-                                        # =>  This Loop Header: Depth=2
-                                        #       Child Loop BB3_4 Depth 3
-                                        #       Child Loop BB3_6 Depth 3
-                                        #       Child Loop BB3_8 Depth 3
-                                        #       Child Loop BB3_10 Depth 3
-                                        #       Child Loop BB3_12 Depth 3
-	mul	a1, a2, t0
-	add	s0, a1, s7
-	add	a5, s0, t1
-	add	a1, s0, s9
-	vsetvli	a3, s8, e16, m4, ta, mu
-	vmv.v.i	v8, 0
-	li	a3, 58
-	mv	a4, a5
-.LBB3_4:                                # %for.body29.us.us.us.us.us.us.i
-                                        #   Parent Loop BB3_2 Depth=1
-                                        #     Parent Loop BB3_3 Depth=2
-                                        # =>    This Inner Loop Header: Depth=3
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vle8.v	v12, (a1)
-	vle8.v	v14, (a4)
-	vsetvli	zero, zero, e8, m2, tu, mu
-	vwmacc.vv	v8, v14, v12
-	add	a1, a1, a0
-	addi	a3, a3, -1
-	add	a4, a4, a0
-	bnez	a3, .LBB3_4
-# %bb.5:                                # %for.cond26.for.cond.cleanup28_crit_edge.us.us.us.us.us.us.i
-                                        #   in Loop: Header=BB3_3 Depth=2
-	add	a1, s0, t2
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vnsra.wi	v12, v8, 0
-	vse8.v	v12, (a1)
-	add	s0, s0, s9
-	addi	a3, s0, 1
-	vsetvli	a4, s3, e16, m4, ta, mu
-	vmv.v.i	v8, 0
-	li	a4, 58
-	mv	s1, a5
-.LBB3_6:                                # %for.body29.us.us.us.us.us.us.i.1
-                                        #   Parent Loop BB3_2 Depth=1
-                                        #     Parent Loop BB3_3 Depth=2
-                                        # =>    This Inner Loop Header: Depth=3
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vle8.v	v12, (a3)
-	vle8.v	v14, (s1)
-	vsetvli	zero, zero, e8, m2, tu, mu
-	vwmacc.vv	v8, v14, v12
-	add	a3, a3, a0
-	addi	a4, a4, -1
-	add	s1, s1, a0
-	bnez	a4, .LBB3_6
-# %bb.7:                                # %for.cond26.for.cond.cleanup28_crit_edge.us.us.us.us.us.us.i.1
-                                        #   in Loop: Header=BB3_3 Depth=2
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vnsra.wi	v12, v8, 0
-	add	a3, a1, t3
-	vse8.v	v12, (a3)
-	addi	a3, s0, 2
-	vsetvli	a4, s4, e16, m4, ta, mu
-	vmv.v.i	v8, 0
-	li	a4, 58
-	mv	s1, a5
-.LBB3_8:                                # %for.body29.us.us.us.us.us.us.i.2
-                                        #   Parent Loop BB3_2 Depth=1
-                                        #     Parent Loop BB3_3 Depth=2
-                                        # =>    This Inner Loop Header: Depth=3
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vle8.v	v12, (a3)
-	vle8.v	v14, (s1)
-	vsetvli	zero, zero, e8, m2, tu, mu
-	vwmacc.vv	v8, v14, v12
-	add	a3, a3, a0
-	addi	a4, a4, -1
-	add	s1, s1, a0
-	bnez	a4, .LBB3_8
-# %bb.9:                                # %for.cond26.for.cond.cleanup28_crit_edge.us.us.us.us.us.us.i.2
-                                        #   in Loop: Header=BB3_3 Depth=2
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vnsra.wi	v12, v8, 0
-	add	a3, a1, t5
-	vse8.v	v12, (a3)
-	addi	a3, s0, 3
-	vsetvli	a4, s5, e16, m4, ta, mu
-	vmv.v.i	v8, 0
-	li	a4, 58
-	mv	s1, a5
-.LBB3_10:                               # %for.body29.us.us.us.us.us.us.i.3
-                                        #   Parent Loop BB3_2 Depth=1
-                                        #     Parent Loop BB3_3 Depth=2
-                                        # =>    This Inner Loop Header: Depth=3
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vle8.v	v12, (a3)
-	vle8.v	v14, (s1)
-	vsetvli	zero, zero, e8, m2, tu, mu
-	vwmacc.vv	v8, v14, v12
-	add	a3, a3, a0
-	addi	a4, a4, -1
-	add	s1, s1, a0
-	bnez	a4, .LBB3_10
-# %bb.11:                               # %for.cond26.for.cond.cleanup28_crit_edge.us.us.us.us.us.us.i.3
-                                        #   in Loop: Header=BB3_3 Depth=2
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vnsra.wi	v12, v8, 0
-	add	a3, a1, t6
-	vse8.v	v12, (a3)
-	addi	a3, s0, 4
-	vsetvli	a4, s6, e16, m4, ta, mu
-	vmv.v.i	v8, 0
-	li	a4, 58
-.LBB3_12:                               # %for.body29.us.us.us.us.us.us.i.4
-                                        #   Parent Loop BB3_2 Depth=1
-                                        #     Parent Loop BB3_3 Depth=2
-                                        # =>    This Inner Loop Header: Depth=3
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vle8.v	v12, (a3)
-	vle8.v	v14, (a5)
-	vsetvli	zero, zero, e8, m2, tu, mu
-	vwmacc.vv	v8, v14, v12
-	add	a3, a3, a0
-	addi	a4, a4, -1
-	add	a5, a5, a0
-	bnez	a4, .LBB3_12
-# %bb.13:                               # %for.cond26.for.cond.cleanup28_crit_edge.us.us.us.us.us.us.i.4
-                                        #   in Loop: Header=BB3_3 Depth=2
-	vsetvli	zero, zero, e8, m2, ta, mu
-	vnsra.wi	v12, v8, 0
-	add	a1, a1, s2
-	addi	a2, a2, 1
-	vse8.v	v12, (a1)
-	bne	a2, t4, .LBB3_3
-# %bb.14:                               # %for.cond9.for.cond.cleanup10_crit_edge.split.us.split.us.us.us.us.i
-                                        #   in Loop: Header=BB3_2 Depth=1
-	add	s7, s7, a7
-	sub	s8, s8, a7
-	vsetvli	a7, s8, e8, m2, ta, mu
-	bnez	a7, .LBB3_2
-.LBB3_15:                               # %correlation_vec.exit
+	addi	a0, a0, %lo(src0_arr_global)
+	sw	a0, 28(sp)
+	lui	a0, %hi(src1_arr_global)
+	addi	a0, a0, %lo(src1_arr_global)
+	sw	a0, 32(sp)
+	lui	a0, %hi(out_arr_global)
+	addi	a0, a0, %lo(out_arr_global)
+	sw	a0, 36(sp)
 	#APP
-	rdcycle	a0
+	csrr	s0, mcycle
 
 	#NO_APP
-	sub	a1, a0, a6
+	addi	a0, sp, 8
+	call	correlation_vec
+	#APP
+	csrr	a0, mcycle
+
+	#NO_APP
+	sub	a1, a0, s0
 	lui	a0, %hi(.L.str)
 	addi	a0, a0, %lo(.L.str)
 	call	printf
 	li	a0, 0
 	lw	ra, 44(sp)                      # 4-byte Folded Reload
 	lw	s0, 40(sp)                      # 4-byte Folded Reload
-	lw	s1, 36(sp)                      # 4-byte Folded Reload
-	lw	s2, 32(sp)                      # 4-byte Folded Reload
-	lw	s3, 28(sp)                      # 4-byte Folded Reload
-	lw	s4, 24(sp)                      # 4-byte Folded Reload
-	lw	s5, 20(sp)                      # 4-byte Folded Reload
-	lw	s6, 16(sp)                      # 4-byte Folded Reload
-	lw	s7, 12(sp)                      # 4-byte Folded Reload
-	lw	s8, 8(sp)                       # 4-byte Folded Reload
-	lw	s9, 4(sp)                       # 4-byte Folded Reload
 	addi	sp, sp, 48
 	ret
 .Lfunc_end3:
@@ -492,9 +319,5 @@ out_arr_global:
 	.asciz	"correlation_58x112x88_test running cycles : %d.\n"
 	.size	.L.str, 49
 
-	.ident	"Terapines LTD zcc version 1.0.0 (https://www.terapines.com 9342a04ec5543841a5f8bc068eab6c665aba47ef)"
+	.ident	"Terapines LTD zcc version 2.0.0 (https://www.terapines.com d82a1442dfd98f60f08014f36ba57878ee901dfd)"
 	.section	".note.GNU-stack","",@progbits
-	.addrsig
-	.addrsig_sym src0_arr_global
-	.addrsig_sym src1_arr_global
-	.addrsig_sym out_arr_global
